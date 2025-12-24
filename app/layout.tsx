@@ -12,7 +12,7 @@ export default function Layout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="kr">
+    <>
       <div className="min-h-screen flex flex-col">
         <Header />
         <main className="flex-1 bg-gray-100 px-lg py-lg">
@@ -20,6 +20,6 @@ export default function Layout({
         </main>
         <Footer />
       </div>
-    </html>
+    </>
   );
 }
