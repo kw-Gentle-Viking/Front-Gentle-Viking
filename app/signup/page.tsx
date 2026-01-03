@@ -1,6 +1,6 @@
 'use client';
 
-import { use, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { BasicForm, RiskProfile } from '@/lib/signup/types';
@@ -131,6 +131,52 @@ const SignupPage = () => {
     if (surveyScore <= 17) return '적극투자형';
     return '공격투자형';
   }, [surveyScore]);
+
+  const setField = <K extends keyof BasicForm>(
+    key: K,
+    value: BasicForm[K]
+  ) => {
+    setBasicForm((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  };
+
+  const markTouched = <K extends keyof BasicForm>(key: K) => {
+    setTouched((prev) => ({
+      ...prev,
+      [key]: true,
+    }));
+  };
+
+  const markAllTouched = () => {
+    (Object.keys(basicForm) as (keyof BasicForm)[]).forEach((key) =>
+      markTouched(key)
+    );
+  };
+
+  const onNext = () => {
+    if (!canGoStep2) {
+      markAllTouched();
+      return;
+    }
+    setStep(2);
+  };
+
+  const onPrev = () => setStep(1);
+
+  const onFinish = () => {
+    // 추후 회원가입 api 연동 예정
+    console.log('[basicForm]', basicForm);
+    console.log('[survey]', survey, { surveyScore, surveyLabel });
+
+    alert(
+      `가입 완료(데모)\n\n투자성향: ${surveyLabel} (score: ${surveyScore})`
+    );
+    router.push('/');
+  };
+
+  return <></>;
 };
 
 export default SignupPage;
