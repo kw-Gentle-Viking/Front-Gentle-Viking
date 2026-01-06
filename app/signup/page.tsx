@@ -4,7 +4,6 @@ import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { BasicForm, RiskProfile } from '@/lib/signup/types';
-import { REQUIRED_CONSENT_TEXT } from '@/lib/signup/consent';
 import SignupForm from '@/components/signup/SignupForm';
 import Survey from '@/components/signup/Survey';
 
@@ -181,7 +180,7 @@ const SignupPage = () => {
   return (
     <main className="min-h-[calc(100vh-64px)] px-4 py-10 flex items-center justify-center">
       {/* layout에 헤더가 있으니 여기선 카드만 */}
-      <section className="w-full max-w-[420px] rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+      <section className="w-full max-w-[620px] rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
         {/* 페이지 내부 섹션 타이틀(선택) */}
         <div className="mb-4">
           <h1 className="text-xl font-extrabold">
