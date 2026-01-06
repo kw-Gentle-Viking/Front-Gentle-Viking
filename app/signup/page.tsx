@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 
 import { BasicForm, RiskProfile } from '@/lib/signup/types';
 import { REQUIRED_CONSENT_TEXT } from '@/lib/signup/consent';
+import SignupForm from '@/components/signup/SignupForm';
+import Survey from '@/components/signup/Survey';
 
 type Step = 1 | 2;
 
@@ -176,7 +178,64 @@ const SignupPage = () => {
     router.push('/');
   };
 
-  return <></>;
+  return (
+    <main className="min-h-[calc(100vh-64px)] px-4 py-10 flex items-center justify-center">
+      {/* layout에 헤더가 있으니 여기선 카드만 */}
+      <section className="w-full max-w-[420px] rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+        {/* 페이지 내부 섹션 타이틀(선택) */}
+        <div className="mb-4">
+          <h1 className="text-xl font-extrabold">
+            회원가입{' '}
+            <span className="text-gray-500 text-sm font-semibold">
+              {step === 1 ? '1/2' : '2/2'}
+            </span>
+          </h1>
+          <p className="mt-1 text-xs text-gray-500">
+            기본 정보 입력 후 투자성향 설문을 진행합니다.
+          </p>
+        </div>
+
+        {/* 본문 */}
+        {step === 1 ? (
+          <SignupForm
+            value={basicForm}
+            touched={touched}
+            errors={basicErrors}
+            pwRules={pwRules}
+            onChange={setField}
+            onBlur={markTouched}
+            onBack={() => router.back()}
+            onNext={onNext}
+            nextDisabled={!canGoStep2}
+          />
+        ) : (
+          <Survey
+            value={survey}
+            onChange={setSurvey}
+            score={surveyScore}
+            label={surveyLabel}
+            onPrev={onPrev}
+            onFinish={onFinish}
+          />
+        )}
+
+        {/* 진행 원 */}
+        <div className="mt-5 flex justify-center gap-2">
+          {[1, 2].map((n) => (
+            <span
+              key={n}
+              className={[
+                'h-2.5 w-2.5 rounded-full border border-black transition',
+                step === n
+                  ? 'bg-black opacity-100'
+                  : 'bg-transparent opacity-30',
+              ].join(' ')}
+            />
+          ))}
+        </div>
+      </section>
+    </main>
+  );
 };
 
 export default SignupPage;
