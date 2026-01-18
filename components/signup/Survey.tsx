@@ -8,14 +8,14 @@ export default function SignupForm({
   score,
   label,
   onPrev,
-  onFinish,
+  onSubmit,
 }: {
   value: RiskProfile;
   onChange: (next: RiskProfile) => void;
   score: number;
   label: string;
   onPrev: () => void;
-  onFinish: () => void;
+  onSubmit: () => void;
 }) {
   return (
     <div className="space-y-4">
@@ -106,7 +106,7 @@ export default function SignupForm({
         </button>
         <button
           type="button"
-          onClick={onFinish}
+          onClick={onSubmit}
           className="flex-1 rounded-2xl bg-black px-4 py-3 text-sm font-extrabold text-white hover:opacity-90"
         >
           가입 완료
