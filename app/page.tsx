@@ -8,7 +8,7 @@ import MyPfCard from '@/components/home/MyPfCard';
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen text-neutral-50">
+    <main className="min-h-screen text-neutral-900">
       <div className="mx-auto w-full max-w-6xl px-4 py-6">
         <HomeHeader />
 

@@ -31,7 +31,7 @@ export default function CandlesChart({ data, height = 140 }: Props) {
   return (
     <svg
       viewBox={`0 0 ${w} ${h}`}
-      className="w-full rounded-xl bg-neutral-950/40"
+      className="w-full rounded-xl bg-neutral-900/20"
       role="img"
       aria-label="candlestick-mini-chart"
     >
@@ -45,7 +45,7 @@ export default function CandlesChart({ data, height = 140 }: Props) {
             y1={padTop + p * innerH}
             y2={padTop + p * innerH}
             stroke="currentColor"
-            className="text-neutral-800"
+            className="text-neutral-900"
             strokeWidth="1"
           />
         ))}
@@ -73,7 +73,7 @@ export default function CandlesChart({ data, height = 140 }: Props) {
               y1={yHigh}
               y2={yLow}
               stroke="currentColor"
-              className={up ? 'text-emerald-300' : 'text-rose-300'}
+              className={up ? 'text-emerald-500' : 'text-rose-500'}
               strokeWidth="2"
               opacity="0.9"
             />
@@ -84,7 +84,7 @@ export default function CandlesChart({ data, height = 140 }: Props) {
               width={bodyW}
               height={bodyH}
               rx="2"
-              className={up ? 'fill-emerald-300' : 'fill-rose-300'}
+              className={up ? 'fill-emerald-500' : 'fill-rose-500'}
               opacity="0.9"
             />
           </g>
