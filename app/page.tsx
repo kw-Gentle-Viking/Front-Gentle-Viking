@@ -12,26 +12,30 @@ export default function HomePage() {
       <div className="mx-auto w-full max-w-6xl px-4 py-6">
         <HomeHeader />
         <section className="mt-6 flex gap-4">
-          <div className="flex-[1]">
+          <div className="flex-[2]">
             <AssetsCard />
           </div>
 
-          <div className="flex-[2]">
+          <div className="flex-[3]">
             <NewsCard />
           </div>
         </section>
 
         <section>
-          <div className="mt-6"></div>
+          <div className="mt-6 flex w-full gap-4">
+            <TradingWindowCard />
+          </div>
         </section>
 
-        <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-12">
-          {/* 우측: 트레이딩/AI 거래 */}
-          <section className="lg:col-span-7 flex flex-col gap-4">
-            <TradingWindowCard />
+        <section className="mt-6 flex gap-4">
+          <div className="flex-[2]">
+            <MyPfCard />
+          </div>
+
+          <div className="flex-[3]">
             <AITradesCard />
-          </section>
-        </div>
+          </div>
+        </section>
       </div>
     </main>
   );

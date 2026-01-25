@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 export default function MyPfCard() {
   return (
-    <section className="rounded-2xl border border-neutral-200 bg-neutral-50 p-4 shadow-sm">
+    <section className="h-full rounded-2xl border border-neutral-200 bg-neutral-50 p-4 shadow-sm">
       <h2 className="text-base font-semibold">내 포트폴리오</h2>
       <p className="mt-2 text-sm text-neutral-600">
         보유 종목/비중/성과를 한 번에 확인합니다.

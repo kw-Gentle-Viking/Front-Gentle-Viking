@@ -11,7 +11,7 @@ export default function TradingWindowCard() {
   const candles = useMemo(() => mockCandles, []);
 
   return (
-    <section className="rounded-2xl border border-neutral-200 bg-neutral-50 p-4 shadow-sm">
+    <section className="w-full rounded-2xl border border-neutral-200 bg-neutral-50 p-4 shadow-sm">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 className="text-base font-semibold">주식 거래창</h2>
         <div className="flex items-center gap-2 text-sm">
