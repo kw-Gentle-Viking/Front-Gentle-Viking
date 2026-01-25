@@ -73,7 +73,7 @@ const SignupPage = () => {
 
   const pwRules = useMemo(
     () => checkPassword(basicForm.pw1),
-    [basicForm.pw1]
+    [basicForm.pw1],
   );
 
   const basicErrors = useMemo(() => {
@@ -104,7 +104,7 @@ const SignupPage = () => {
 
   const canGoStep2 = useMemo(
     () => Object.keys(basicErrors).length === 0,
-    [basicErrors]
+    [basicErrors],
   );
 
   const surveyScore = useMemo(() => {
@@ -135,7 +135,7 @@ const SignupPage = () => {
 
   const setField = <K extends keyof BasicForm>(
     key: K,
-    value: BasicForm[K]
+    value: BasicForm[K],
   ) => {
     setBasicForm((prev) => ({
       ...prev,
@@ -152,7 +152,7 @@ const SignupPage = () => {
 
   const markAllTouched = () => {
     (Object.keys(basicForm) as (keyof BasicForm)[]).forEach((key) =>
-      markTouched(key)
+      markTouched(key),
     );
   };
 
@@ -166,13 +166,13 @@ const SignupPage = () => {
 
   const onPrev = () => setStep(1);
 
-  const onFinish = () => {
+  const onSubmit = () => {
     // 추후 회원가입 api 연동 예정
     console.log('[basicForm]', basicForm);
     console.log('[survey]', survey, { surveyScore, surveyLabel });
 
     alert(
-      `가입 완료(데모)\n\n투자성향: ${surveyLabel} (score: ${surveyScore})`
+      `가입 완료(데모)\n\n투자성향: ${surveyLabel} (score: ${surveyScore})`,
     );
     router.push('/');
   };
@@ -214,7 +214,7 @@ const SignupPage = () => {
             score={surveyScore}
             label={surveyLabel}
             onPrev={onPrev}
-            onFinish={onFinish}
+            onSubmit={onSubmit}
           />
         )}
 
