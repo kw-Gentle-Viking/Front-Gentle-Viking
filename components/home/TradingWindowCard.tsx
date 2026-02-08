@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import CandlesChart from '@/components/chart/CandleChart';
 import { loadCandlesFromCsv } from '@/lib/chart/parseStockCsv';
 import { CandleType } from '@/lib/chart/types';
