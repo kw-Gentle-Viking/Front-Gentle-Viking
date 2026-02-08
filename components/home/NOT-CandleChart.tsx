@@ -1,3 +1,5 @@
+// 사용 안하는 파일 : 2026/2/8 기준
+
 import type { Candle } from '@/lib/home/types';
 
 type Props = {
