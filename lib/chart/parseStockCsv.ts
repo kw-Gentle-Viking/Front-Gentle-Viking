@@ -27,6 +27,27 @@ function isCandle(v: CandleType | null): v is CandleType {
   return v !== null;
 }
 
+// 중복 시간 병합
+function mergeSameTime(candles: CandleType[]): CandleType[] {
+  const out: CandleType[] = [];
+  for (const c of candles) {
+    const last = out[out.length - 1];
+
+    if (last && last.time === c.time) {
+      last.high = Math.max(last.high, c.high);
+      last.low = Math.min(last.low, c.low);
+      last.close = c.close;
+      if (last.volume !== undefined || c.volume !== undefined) {
+        last.volume = (last.volume ?? 0) + (c.volume ?? 0);
+      }
+      continue;
+    }
+
+    out.push({ ...c });
+  }
+  return out;
+}
+
 // public 폴더 csv파일 파싱작업
 export async function loadCandlesFromCsv(
   csvPath: string,
@@ -81,5 +102,5 @@ export async function loadCandlesFromCsv(
     .filter(isCandle)
     .sort((a, b) => a.time - b.time);
 
-  return candles;
+  return mergeSameTime(candles);
 }

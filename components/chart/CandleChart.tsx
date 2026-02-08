@@ -51,12 +51,25 @@ export default function CandleChart({ data }: Props) {
         borderVisible: false,
       },
       timeScale: {
-        borderVisible: false,
+        // "HH:mm" 형태로 시간 표시
+        secondsVisible: false,
+        tickMarkFormatter: (time: UTCTimestamp) => {
+          const d = new Date((time as UTCTimestamp) * 1000);
+          return d.toLocaleTimeString('ko-KR', {
+            hour: '2-digit',
+            minute: '2-digit',
+          });
+        },
       },
     });
 
-    const series: ISeriesApi<'Candlestick'> =
-      chart.addSeries(CandlestickSeries);
+    const series = chart.addSeries(CandlestickSeries, {
+      priceFormat: {
+        type: 'custom',
+        formatter: (price: number) =>
+          `${price.toLocaleString('ko-KR')}원`,
+      },
+    });
 
     chartRef.current = chart;
     seriesRef.current = series;
