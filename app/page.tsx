@@ -8,32 +8,43 @@ import MyPfCard from '@/components/home/MyPfCard';
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen text-neutral-900">
-      <div className="mx-auto w-full max-w-6xl px-4 py-6">
-        <HomeHeader />
-        <section className="mt-6 flex gap-4">
-          <div className="flex-[2]">
-            <AssetsCard />
+    <main className="min-h-screen bg-gradient-to-b from-sky-50 via-white to-white text-slate-900">
+      <div className="mx-auto w-full max-w-6xl px-4 py-6 md:px-6 md:py-8">
+        <div className="rounded-2xl border border-slate-200/70 bg-white/80 p-4 shadow-sm backdrop-blur md:p-6">
+          <HomeHeader />
+        </div>
+
+        <section className="mt-6 grid gap-4 md:grid-cols-5">
+          <div className="md:col-span-2">
+            <div className="rounded-2xl border border-slate-200/70 bg-white p-4 shadow-sm">
+              <AssetsCard />
+            </div>
           </div>
 
-          <div className="flex-[3]">
-            <NewsCard />
+          <div className="md:col-span-3">
+            <div className="rounded-2xl border border-slate-200/70 bg-white p-4 shadow-sm">
+              <NewsCard />
+            </div>
           </div>
         </section>
 
-        <section>
-          <div className="mt-6 flex w-full gap-4">
+        <section className="mt-6">
+          <div className="rounded-2xl border border-slate-200/70 bg-white p-4 shadow-sm">
             <TradingWindowCard />
           </div>
         </section>
 
-        <section className="mt-6 flex gap-4">
-          <div className="flex-[2]">
-            <MyPfCard />
+        <section className="mt-6 grid gap-4 md:grid-cols-5">
+          <div className="md:col-span-2">
+            <div className="rounded-2xl border border-slate-200/70 bg-white p-4 shadow-sm">
+              <MyPfCard />
+            </div>
           </div>
 
-          <div className="flex-[3]">
-            <AITradesCard />
+          <div className="md:col-span-3">
+            <div className="rounded-2xl border border-slate-200/70 bg-white p-4 shadow-sm">
+              <AITradesCard />
+            </div>
           </div>
         </section>
       </div>

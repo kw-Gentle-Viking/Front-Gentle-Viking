@@ -15,12 +15,18 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko">
-      <body>
+      <body className="bg-white text-slate-900">
         <div className="min-h-screen flex flex-col">
           <Header />
-          <main className="flex-1 bg-gradient-to-b from-zinc-950 via-blue-950/70 to-zinc-900 text-zinc-900 px-[24px] py-[24px] md:px-[32px]">
-            <div className="mx-auto max-w-[1100px]">{children}</div>
+
+          <main className="flex-1 bg-gradient-to-b from-sky-50 via-white to-white px-[24px] py-[24px] md:px-[32px]">
+            <div className="mx-auto max-w-[1100px]">
+              <div className="rounded-2xl border border-slate-200/70 bg-white p-[16px] shadow-sm md:p-[20px]">
+                {children}
+              </div>
+            </div>
           </main>
+
           <Footer />
         </div>
       </body>
