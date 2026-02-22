@@ -88,11 +88,15 @@ export default function Survey({
         />
       </Question>
 
-      <div className="rounded-2xl border border-gray-200 p-3">
-        <div className="text-sm font-extrabold">예상 투자성향</div>
+      <div className="rounded-2xl border border-slate-200/70 bg-white p-3 shadow-sm">
+        <div className="text-sm font-extrabold text-slate-900">
+          예상 투자성향
+        </div>
         <div className="mt-1 text-sm">
-          <span className="font-extrabold">{label}</span>{' '}
-          <span className="text-gray-500">(score: {score})</span>
+          <span className="font-extrabold text-blue-800">
+            {label}
+          </span>{' '}
+          <span className="text-slate-500">(score: {score})</span>
         </div>
       </div>
 
@@ -100,14 +104,14 @@ export default function Survey({
         <button
           type="button"
           onClick={onPrev}
-          className="flex-1 rounded-2xl border border-gray-200 px-4 py-3 text-sm font-bold text-gray-700 hover:bg-gray-50"
+          className="flex-1 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50"
         >
           이전
         </button>
         <button
           type="button"
           onClick={onSubmit}
-          className="flex-1 rounded-2xl bg-black px-4 py-3 text-sm font-extrabold text-white hover:opacity-90"
+          className="flex-1 rounded-2xl bg-blue-800 px-4 py-3 text-sm font-extrabold text-white shadow-sm transition hover:bg-blue-700 active:bg-blue-900"
         >
           가입 완료
         </button>
@@ -124,8 +128,10 @@ function Question({
   children: React.ReactNode;
 }) {
   return (
-    <section>
-      <div className="mb-2 text-sm font-extrabold">{title}</div>
+    <section className="rounded-2xl border border-slate-200/70 bg-white p-4 shadow-sm">
+      <div className="mb-2 text-sm font-extrabold text-slate-900">
+        {title}
+      </div>
       {children}
     </section>
   );
@@ -145,15 +151,18 @@ function RadioRow<T extends string>({
   return (
     <div className="space-y-2">
       {options.map(([v, label]) => (
-        <label key={v} className="flex items-center gap-2">
+        <label
+          key={v}
+          className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 transition hover:bg-sky-50"
+        >
           <input
             type="radio"
             name={name}
             checked={value === v}
             onChange={() => onChange(v)}
-            className="h-4 w-4"
+            className="h-4 w-4 border-slate-300 text-blue-800 focus:ring-blue-800/20"
           />
-          <span className="text-sm">{label}</span>
+          <span className="text-sm text-slate-700">{label}</span>
         </label>
       ))}
     </div>

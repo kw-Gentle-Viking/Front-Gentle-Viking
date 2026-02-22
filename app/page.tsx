@@ -8,7 +8,7 @@ import MyPfCard from '@/components/home/MyPfCard';
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-gradient-to-b from-sky-50 via-white to-white text-slate-900">
+    <main className="min-h-screen bg-gradient-to-b from-sky-50 via-sky-30 to-white text-slate-900">
       <div className="mx-auto w-full max-w-6xl px-4 py-6 md:px-6 md:py-8">
         <div className="rounded-2xl border border-slate-200/70 bg-white/80 p-4 shadow-sm backdrop-blur md:p-6">
           <HomeHeader />

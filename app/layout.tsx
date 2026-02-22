@@ -19,11 +19,9 @@ export default function RootLayout({
         <div className="min-h-screen flex flex-col">
           <Header />
 
-          <main className="flex-1 bg-gradient-to-b from-sky-50 via-white to-white px-[24px] py-[24px] md:px-[32px]">
+          <main className="flex-1 bg-gradient-to-b from-sky-50 via-sky-20 to-white px-[24px] py-[24px] md:px-[32px]">
             <div className="mx-auto max-w-[1100px]">
-              <div className="rounded-2xl border border-slate-200/70 bg-white p-[16px] shadow-sm md:p-[20px]">
-                {children}
-              </div>
+              <div>{children}</div>
             </div>
           </main>
 

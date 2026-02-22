@@ -167,7 +167,6 @@ const SignupPage = () => {
   const onPrev = () => setStep(1);
 
   const onSubmit = () => {
-    // 추후 회원가입 api 연동 예정
     console.log('[basicForm]', basicForm);
     console.log('[survey]', survey, { surveyScore, surveyLabel });
 
@@ -178,23 +177,20 @@ const SignupPage = () => {
   };
 
   return (
-    <main className="min-h-[calc(100vh-64px)] px-4 py-10 flex items-center justify-center">
-      {/* layout에 헤더가 있으니 여기선 카드만 */}
-      <section className="w-full max-w-[620px] rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
-        {/* 페이지 내부 섹션 타이틀(선택) */}
+    <main className="min-h-[calc(100vh-64px)] bg-gradient-to-b from-sky-50 via-sky-30 to-white px-4 py-10 flex items-center justify-center animate-slide-up">
+      <section className="w-full max-w-[620px] rounded-2xl border border-slate-200/70 bg-white p-8 shadow-sm">
         <div className="mb-4">
-          <h1 className="text-xl font-extrabold">
+          <h1 className="text-xl font-extrabold text-slate-900">
             회원가입{' '}
-            <span className="text-gray-500 text-sm font-semibold">
+            <span className="text-slate-500 text-sm font-semibold">
               {step === 1 ? '1/2' : '2/2'}
             </span>
           </h1>
-          <p className="mt-1 text-xs text-gray-500">
+          <p className="mt-1 text-xs text-slate-500">
             기본 정보 입력 후 투자성향 설문을 진행합니다.
           </p>
         </div>
 
-        {/* 본문 */}
         {step === 1 ? (
           <SignupForm
             value={basicForm}
@@ -218,16 +214,15 @@ const SignupPage = () => {
           />
         )}
 
-        {/* 진행 원 */}
         <div className="mt-5 flex justify-center gap-2">
           {[1, 2].map((n) => (
             <span
               key={n}
               className={[
-                'h-2.5 w-2.5 rounded-full border border-black transition',
+                'h-2.5 w-2.5 rounded-full border transition',
                 step === n
-                  ? 'bg-black opacity-100'
-                  : 'bg-transparent opacity-30',
+                  ? 'border-blue-800 bg-blue-800 opacity-100'
+                  : 'border-slate-300 bg-transparent opacity-40',
               ].join(' ')}
             />
           ))}
