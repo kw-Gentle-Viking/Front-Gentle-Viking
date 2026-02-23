@@ -8,12 +8,52 @@ import {
   CandlestickData,
   UTCTimestamp,
   CandlestickSeries,
+  LogicalRange,
+  SeriesMarker,
 } from 'lightweight-charts';
 import { CandleType } from '@/lib/chart/types';
 
 type Props = {
   data: CandleType[];
 };
+
+function computeHighLowPoint(
+  data: CandlestickData<UTCTimestamp>[],
+  range: LogicalRange | null,
+) {
+  if (!range || data.length === 0) return null;
+
+  const from = Math.max(0, Math.floor(range.from));
+  const to = Math.min(data.length - 1, Math.ceil(range.to));
+
+  let hi = -Infinity;
+  let lo = Infinity;
+  let hiIdx = -1;
+  let loIdx = -1;
+
+  for (let i = from; i <= to; i++) {
+    const c = data[i];
+    if (!c) continue;
+
+    if (c.high > hi) {
+      hi = c.high;
+      hiIdx = i;
+    }
+    if (c.low < lo) {
+      lo = c.low;
+      loIdx = i;
+    }
+  }
+
+  if (hiIdx < 0 || loIdx < 0) return null;
+
+  return {
+    hi,
+    lo,
+    hiTime: data[hiIdx].time,
+    loTime: data[loIdx].time,
+  };
+}
 
 export default function CandleChart({ data }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -30,18 +70,16 @@ export default function CandleChart({ data }: Props) {
     }));
   }, [data]);
 
-  // 차트 초기화
   useEffect(() => {
     if (!containerRef.current) return;
 
-    // 차트 생성
     const chart = createChart(containerRef.current, {
       height: 420,
       width: containerRef.current.clientWidth,
       crosshair: { mode: CrosshairMode.Normal },
       layout: {
         background: { color: 'transparent' },
-        textColor: '#111827',
+        textColor: '#0F172A',
       },
       grid: {
         vertLines: { visible: false },
@@ -51,7 +89,6 @@ export default function CandleChart({ data }: Props) {
         borderVisible: false,
       },
       timeScale: {
-        // "HH:mm" 형태로 시간 표시
         secondsVisible: false,
         tickMarkFormatter: (time: UTCTimestamp) => {
           const d = new Date((time as UTCTimestamp) * 1000);
@@ -74,7 +111,6 @@ export default function CandleChart({ data }: Props) {
     chartRef.current = chart;
     seriesRef.current = series;
 
-    // 리사이즈 대응
     const onResize = () => {
       if (!containerRef.current || !chartRef.current) return;
       chartRef.current.applyOptions({
@@ -91,7 +127,6 @@ export default function CandleChart({ data }: Props) {
     };
   }, []);
 
-  // 데이터 변동시 차트 업데이트
   useEffect(() => {
     if (!seriesRef.current) return;
     seriesRef.current.setData(chartData);
@@ -99,7 +134,7 @@ export default function CandleChart({ data }: Props) {
   }, [chartData]);
 
   return (
-    <div className="w-full rounded-2xl border border-zinc-200 bg-white/60 p-3">
+    <div className="w-full rounded-2xl border border-slate-200/70 bg-white p-3 shadow-sm">
       <div ref={containerRef} className="w-full" />
     </div>
   );

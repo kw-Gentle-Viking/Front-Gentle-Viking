@@ -27,7 +27,7 @@ export default function SignupForm({
   pwRules: PwRules;
   onChange: <K extends keyof BasicForm>(
     key: K,
-    v: BasicForm[K]
+    v: BasicForm[K],
   ) => void;
   onBlur: (key: keyof BasicForm) => void;
   onBack: () => void;
@@ -73,7 +73,7 @@ export default function SignupForm({
             type="button"
             disabled
             title="API 적용 후 활성화 예정"
-            className="whitespace-nowrap rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-400"
+            className="whitespace-nowrap rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-400"
           >
             중복체크(추후)
           </button>
@@ -93,7 +93,7 @@ export default function SignupForm({
         {touched.phone && errors.phone && (
           <ErrorText text={errors.phone} />
         )}
-        <p className="mt-1 text-[11px] text-gray-500">
+        <p className="mt-1 text-[11px] text-slate-500">
           ** 데모는 숫자만 10~11자 검증합니다.
         </p>
       </Field>
@@ -145,12 +145,12 @@ export default function SignupForm({
         )}
       </Field>
 
-      <div className="rounded-xl border border-gray-200 p-3">
-        <div className="text-sm font-extrabold">
+      <div className="rounded-xl border border-slate-200/70 bg-white p-3">
+        <div className="text-sm font-extrabold text-slate-900">
           투자 관련 필수 동의
         </div>
 
-        <div className="mt-2 max-h-40 overflow-auto whitespace-pre-wrap rounded-lg border border-gray-100 bg-gray-50 p-3 text-xs leading-5 text-gray-700">
+        <div className="mt-2 max-h-40 overflow-auto whitespace-pre-wrap rounded-lg border border-slate-200 bg-sky-50 p-3 text-xs leading-5 text-slate-700">
           {REQUIRED_CONSENT_TEXT}
         </div>
 
@@ -162,9 +162,9 @@ export default function SignupForm({
               onChange('consetRequired', e.target.checked)
             }
             onBlur={() => onBlur('consetRequired')}
-            className="h-4 w-4"
+            className="h-4 w-4 rounded border-slate-300 text-blue-800 focus:ring-blue-800/20"
           />
-          <span className="text-sm">
+          <span className="text-sm text-slate-700">
             [필수] 위 내용을 읽고 동의합니다.
           </span>
         </label>
@@ -178,7 +178,7 @@ export default function SignupForm({
         <button
           type="button"
           onClick={onBack}
-          className="flex-1 rounded-xl border border-gray-200 px-4 py-3 text-sm font-bold text-gray-700 hover:bg-gray-50"
+          className="flex-1 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50"
         >
           뒤로
         </button>
@@ -187,10 +187,10 @@ export default function SignupForm({
           onClick={onNext}
           disabled={nextDisabled}
           className={[
-            'flex-1 rounded-xl px-4 py-3 text-sm font-extrabold',
+            'flex-1 rounded-xl px-4 py-3 text-sm font-extrabold shadow-sm transition',
             nextDisabled
-              ? 'cursor-not-allowed bg-gray-200 text-gray-500'
-              : 'bg-black text-white hover:opacity-90',
+              ? 'cursor-not-allowed bg-slate-200 text-slate-500'
+              : 'bg-blue-800 text-white hover:bg-blue-700 active:bg-blue-900',
           ].join(' ')}
         >
           다음
@@ -211,9 +211,9 @@ function Field({
 }) {
   return (
     <div>
-      <div className="mb-1 text-sm font-extrabold">
+      <div className="mb-1 text-sm font-extrabold text-slate-900">
         {label}{' '}
-        {required ? <span className="text-gray-400">*</span> : null}
+        {required ? <span className="text-slate-400">*</span> : null}
       </div>
       {children}
     </div>
@@ -230,8 +230,8 @@ function Input({
     <input
       {...props}
       className={[
-        'w-full rounded-xl border border-gray-200 px-3 py-2 text-sm outline-none',
-        'focus:border-gray-400',
+        'w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none',
+        'placeholder:text-slate-400 focus:border-blue-800 focus:ring-2 focus:ring-blue-800/10',
         className,
       ].join(' ')}
     />
@@ -240,14 +240,14 @@ function Input({
 
 function ErrorText({ text }: { text: string }) {
   return (
-    <p className="mt-1 text-xs font-semibold text-red-500">{text}</p>
+    <p className="mt-1 text-xs font-semibold text-rose-600">{text}</p>
   );
 }
 
 function Rule({ ok, text }: { ok: boolean; text: string }) {
   return (
     <div className="flex items-center gap-2">
-      <span className={ok ? 'text-white' : 'text-red-600'}>
+      <span className={ok ? 'text-emerald-700' : 'text-rose-700'}>
         {text}
       </span>
     </div>

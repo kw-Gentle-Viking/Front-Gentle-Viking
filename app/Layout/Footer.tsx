@@ -2,24 +2,32 @@ import Link from 'next/link';
 
 export default function Footer() {
   return (
-    <footer className="border-t border-white/10 bg-zinc-950/55 backdrop-blur text-zinc-200">
+    <footer className="border-t border-slate-200/70 bg-white/80 backdrop-blur text-slate-700">
       <div className="mx-auto flex h-[52px] max-w-[1100px] items-center justify-between px-[24px] text-[12px] md:px-[32px]">
-        {/* 좌측 */}
         <div className="flex items-center gap-[8px]">
-          <span className="font-medium text-zinc-300">
+          <span className="font-medium text-slate-900">
             Gentle Viking
           </span>
-          <span className="hidden sm:inline text-white/20">•</span>
-          <span className="hidden sm:inline">
+          <span className="hidden sm:inline text-slate-300">•</span>
+          <span className="hidden sm:inline text-slate-600">
             © {new Date().getFullYear()}
           </span>
         </div>
 
-        {/* 우측 */}
         <div className="flex items-center gap-[10px]">
-          <Link href="/terms">이용약관</Link>
-          <span className="text-white/20">|</span>
-          <Link href="/privacy">개인정보처리방침</Link>
+          <Link
+            href="/terms"
+            className="text-slate-600 hover:text-blue-600"
+          >
+            이용약관
+          </Link>
+          <span className="text-slate-300">|</span>
+          <Link
+            href="/privacy"
+            className="text-slate-600 hover:text-blue-600"
+          >
+            개인정보처리방침
+          </Link>
         </div>
       </div>
     </footer>
