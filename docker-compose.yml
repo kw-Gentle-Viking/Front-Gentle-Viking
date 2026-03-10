@@ -1,0 +1,12 @@
+services:
+  front:
+    container_name: front
+    build: .
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    networks:
+      - gentleviking
+
+networks:
+  gentleviking:
