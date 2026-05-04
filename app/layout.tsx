@@ -4,6 +4,7 @@ import { SidebarProvider } from "../components/sidebar/SidebarContext";
 import Header from "./Layout/Header";
 import Footer from "./Layout/Footer";
 import Sidebar from "./Layout/Sidebar";
+import MainContainer from "./Layout/MainContainer";
 
 export const metadata: Metadata = {
   title: "Gentle Viking",
@@ -17,13 +18,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko">
-      <body className="bg-white text-[#333D4B]">
+      <body className="bg-white text-[#333D4B] overflow-x-hidden">
         <SidebarProvider>
-          <div className="min-h-screen flex flex-col">
-            <Sidebar />
+          <div className="min-h-screen flex flex-col relative">
             <Header />
-
-            <main className="flex-1 flex overflow-hidden z-0">{children}</main>
+            <Sidebar />
+            <MainContainer>{children}</MainContainer>
             <Footer />
           </div>
         </SidebarProvider>

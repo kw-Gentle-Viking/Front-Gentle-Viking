@@ -24,55 +24,95 @@ export default function Header() {
     { name: "AI 리포트", href: "/ai-report" },
   ];
 
-  const authMenus = isLoggedIn
-    ? [
-        ...publicMenus,
-        { name: "내 주식보기", href: "/portfolio" },
-        { name: "마이페이지", href: "/mypage" },
-      ]
-    : [
-        ...publicMenus,
-        { name: "로그인", href: "/login" },
-        { name: "회원가입", href: "/signup" },
-      ];
+  const loggedInMenus = [
+    ...publicMenus,
+    { name: "내 주식보기", href: "/portfolio" },
+    { name: "마이페이지", href: "/mypage" },
+  ];
 
   return (
     <header
-      className="sticky top-0 z-50 bg-white px-6 h-[64px] flex items-center 
-    justify-between transition-all duration-300 ease-in-out"
+      className="sticky top-0 z-50 bg-white px-6 h-[58px] flex items-center
+    justify-between transition-all duration-300 ease-in-out border-b border-gray-100"
       style={{ width: `calc(100% - ${sidebarWidth})` }}
     >
       {/* 1. 로고 및 네비게이션 */}
-      <div className="flex items-center gap-6">
+      <div className="flex items-center gap-8">
         <Link href="/" className="flex items-center gap-2">
           <img
             src="/genvi.png"
             alt="Gentle Viking Logo"
-            className="w-30 h-24 object-contain"
+            className="h-16 w-auto object-contain"
           />
         </Link>
 
         <nav className="hidden md:flex items-center gap-6">
-          {authMenus.map((menu) => {
+          {publicMenus.map((menu) => {
             const isActive = pathname === menu.href;
             return (
               <Link
                 key={menu.href}
                 href={menu.href}
-                className={`text-sm font-medium transition-colors hover:text-black ${
-                  isActive ? "text-[#333D4B] font-bold" : "text-[#6B7684]"
+                className={`text-sm transition-colors ${
+                  isActive
+                    ? "text-[#333D4B] font-bold"
+                    : "text-[#6B7684] font-medium hover:text-[#333D4B]"
                 }`}
               >
                 {menu.name}
               </Link>
             );
           })}
+
+          {isLoggedIn ? (
+            <>
+              {loggedInMenus.slice(2).map((menu) => {
+                const isActive = pathname === menu.href;
+                return (
+                  <Link
+                    key={menu.href}
+                    href={menu.href}
+                    className={`text-sm transition-colors ${
+                      isActive
+                        ? "text-[#333D4B] font-bold"
+                        : "text-[#6B7684] font-medium hover:text-[#333D4B]"
+                    }`}
+                  >
+                    {menu.name}
+                  </Link>
+                );
+              })}
+            </>
+          ) : (
+            <div className="flex items-center gap-0">
+              <Link
+                href="/login"
+                className={`text-sm transition-colors ${
+                  pathname === "/login"
+                    ? "text-[#333D4B] font-bold"
+                    : "text-[#6B7684] font-medium hover:text-[#333D4B]"
+                }`}
+              >
+                로그인
+              </Link>
+              <span className="text-[#D1D6DB] mx-2 select-none">|</span>
+              <Link
+                href="/signup"
+                className={`text-sm transition-colors ${
+                  pathname === "/signup"
+                    ? "text-[#333D4B] font-bold"
+                    : "text-[#6B7684] font-medium hover:text-[#333D4B]"
+                }`}
+              >
+                회원가입
+              </Link>
+            </div>
+          )}
         </nav>
       </div>
 
-      {/* 2. 우측 검색 버튼 및 로그인 토글(테스트용) */}
+      {/* 2. 우측 검색 버튼 */}
       <div className="flex items-center gap-4">
-        {/* 검색 버튼 */}
         <div className="relative group">
           <input
             type="text"
