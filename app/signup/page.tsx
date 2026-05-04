@@ -177,16 +177,16 @@ const SignupPage = () => {
   };
 
   return (
-    <main className="min-h-[calc(100vh-64px)] bg-gradient-to-b from-sky-50 via-sky-30 to-white px-4 py-10 flex items-center justify-center animate-slide-up">
-      <section className="w-full max-w-[620px] rounded-2xl border border-slate-200/70 bg-white p-8 shadow-sm">
-        <div className="mb-4">
-          <h1 className="text-xl font-extrabold text-slate-900">
+    <div className="flex flex-1 items-center justify-center bg-gradient-to-b from-[#BACFE8] to-[#CADcF2] px-4 py-12">
+      <div className="w-full max-w-[520px] rounded-2xl bg-white/90 p-8 shadow-md backdrop-blur-sm">
+        <div className="mb-6">
+          <h1 className="text-center text-2xl font-bold text-slate-800">
             회원가입{' '}
-            <span className="text-slate-500 text-sm font-semibold">
+            <span className="text-slate-400 text-sm font-semibold">
               {step === 1 ? '1/2' : '2/2'}
             </span>
           </h1>
-          <p className="mt-1 text-xs text-slate-500">
+          <p className="mt-1 text-center text-xs text-slate-500">
             기본 정보 입력 후 투자성향 설문을 진행합니다.
           </p>
         </div>
@@ -227,8 +227,8 @@ const SignupPage = () => {
             />
           ))}
         </div>
-      </section>
-    </main>
+      </div>
+    </div>
   );
 };
 

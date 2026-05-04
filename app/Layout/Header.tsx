@@ -6,18 +6,20 @@ import { usePathname } from "next/navigation";
 import { IoSearchOutline } from "react-icons/io5";
 import { useSidebar } from "@/components/sidebar/SidebarContext";
 
+const AUTH_ROUTES = ["/login", "/signup"];
+
 export default function Header() {
   const pathname = usePathname();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const isAuth = AUTH_ROUTES.some((r) => pathname.startsWith(r));
+  const { isOpen } = useSidebar();
+  const sidebarWidth = isAuth ? "0px" : isOpen ? "370px" : "56px";
 
   const handleLogout = () => {
     localStorage.removeItem("gv-auth");
     setIsLoggedIn(false);
     location.href = "/";
   };
-
-  const { isOpen } = useSidebar();
-  const sidebarWidth = isOpen ? "370px" : "56px";
 
   const publicMenus = [
     { name: "홈", href: "/" },
@@ -26,14 +28,15 @@ export default function Header() {
 
   const loggedInMenus = [
     ...publicMenus,
-    { name: "내 주식보기", href: "/portfolio" },
+    { name: "내 포트폴리오", href: "/portfolio" },
     { name: "마이페이지", href: "/mypage" },
   ];
 
   return (
     <header
-      className="sticky top-0 z-50 bg-white px-6 h-[58px] flex items-center
-    justify-between transition-all duration-300 ease-in-out border-b border-gray-100"
+      className={`sticky top-0 z-50 px-6 h-[58px] flex items-center justify-between transition-all duration-300 ease-in-out border-b ${
+        isAuth ? "bg-[#BACFE8] border-transparent" : "bg-white border-gray-100"
+      }`}
       style={{ width: `calc(100% - ${sidebarWidth})` }}
     >
       {/* 1. 로고 및 네비게이션 */}
