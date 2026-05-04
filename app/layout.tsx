@@ -1,11 +1,14 @@
-import './globals.css';
-import type { Metadata } from 'next';
-import Header from './Layout/Header';
-import Footer from './Layout/Footer';
+import "./globals.css";
+import type { Metadata } from "next";
+import { SidebarProvider } from "../components/sidebar/SidebarContext";
+import Header from "./Layout/Header";
+import Footer from "./Layout/Footer";
+import Sidebar from "./Layout/Sidebar";
+import MainContainer from "./Layout/MainContainer";
 
 export const metadata: Metadata = {
-  title: 'Gentle Viking',
-  description: 'AI 포트폴리오 구성 및 자동매매 서비스',
+  title: "Gentle Viking",
+  description: "AI 포트폴리오 구성 및 자동매매 서비스",
 };
 
 export default function RootLayout({
@@ -15,18 +18,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko">
-      <body className="bg-white text-slate-900">
-        <div className="min-h-screen flex flex-col">
-          <Header />
-
-          <main className="flex-1 bg-gradient-to-b from-sky-50 via-sky-20 to-white px-[24px] py-[24px] md:px-[32px]">
-            <div className="mx-auto max-w-[1100px]">
-              <div>{children}</div>
-            </div>
-          </main>
-
-          <Footer />
-        </div>
+      <body className="bg-white text-[#333D4B] overflow-x-hidden">
+        <SidebarProvider>
+          <div className="min-h-screen flex flex-col relative">
+            <Header />
+            <Sidebar />
+            <MainContainer>{children}</MainContainer>
+            <Footer />
+          </div>
+        </SidebarProvider>
       </body>
     </html>
   );
