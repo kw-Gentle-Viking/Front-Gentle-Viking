@@ -34,6 +34,330 @@
   animation: slideUpFade 0.6s ease-out forwards;
 }
 
+@keyframes logoMarquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.logo-marquee {
+  mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+}
+
+.logo-marquee-track {
+  animation: logoMarquee 22s linear infinite;
+}
+
+@keyframes landingFloat {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -12px;
+  }
+}
+
+.landing-float {
+  animation: landingFloat 5.5s ease-in-out infinite;
+}
+
+@keyframes landingEnter {
+  from {
+    opacity: 0;
+    scale: 0.96;
+    translate: 0 28px;
+    filter: blur(10px);
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+    translate: 0 0;
+    filter: blur(0);
+  }
+}
+
+.landing-enter {
+  opacity: 0;
+  animation: landingEnter 0.72s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.landing-enter-1 {
+  animation-delay: 0.08s;
+}
+
+.landing-enter-2 {
+  animation-delay: 0.18s;
+}
+
+.landing-enter-3 {
+  animation-delay: 0.3s;
+}
+
+.landing-enter-4 {
+  animation-delay: 0.42s;
+}
+
+.landing-enter-5 {
+  animation-delay: 0.58s;
+}
+
+@keyframes previewDrift {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -8px;
+  }
+}
+
+.landing-preview {
+  animation:
+    landingEnter 0.78s cubic-bezier(0.16, 1, 0.3, 1) 0.58s forwards,
+    previewDrift 7s ease-in-out 1.4s infinite;
+}
+
+.landing-shell {
+  position: relative;
+  isolation: isolate;
+  background: #f5f8fc;
+}
+
+.landing-shell::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 38%, rgba(125, 211, 252, 0.32), transparent 28%),
+    radial-gradient(circle at 62% 44%, rgba(196, 181, 253, 0.28), transparent 24%),
+    linear-gradient(180deg, #f8fbff 0%, #f4f7fb 52%, #edf4ff 100%);
+}
+
+.auth-shell {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 16% 10%, rgba(56, 189, 248, 0.58), transparent 30%),
+    radial-gradient(circle at 72% 18%, rgba(224, 242, 254, 0.72), transparent 31%),
+    radial-gradient(circle at 45% 88%, rgba(124, 58, 237, 0.38), transparent 36%),
+    linear-gradient(135deg, #60a5fa 0%, #818cf8 48%, #dbeafe 100%);
+}
+
+.auth-shell::before {
+  content: "";
+  position: fixed;
+  inset: -18%;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 34% 30%, rgba(255, 255, 255, 0.34), transparent 24%),
+    radial-gradient(circle at 72% 72%, rgba(79, 70, 229, 0.18), transparent 28%);
+  filter: blur(18px);
+}
+
+.auth-shell > * {
+  position: relative;
+  z-index: 1;
+}
+
+.signal-news {
+  --suck-x: 43vw;
+  --suck-y: 50vh;
+  --signal-delay: 0.24s;
+  --enter-x: -86px;
+  --overshoot-x: 12px;
+}
+
+.signal-dart {
+  --suck-x: -40vw;
+  --suck-y: 56vh;
+  --signal-delay: 0.34s;
+  --enter-x: 86px;
+  --overshoot-x: -12px;
+}
+
+.signal-krx {
+  --suck-x: 32vw;
+  --suck-y: 20vh;
+  --signal-delay: 0.44s;
+  --enter-x: -86px;
+  --overshoot-x: 12px;
+}
+
+.signal-kis {
+  --suck-x: -32vw;
+  --suck-y: 22vh;
+  --signal-delay: 0.54s;
+  --enter-x: 86px;
+  --overshoot-x: -12px;
+}
+
+.signal-ai {
+  --suck-x: 44vw;
+  --suck-y: -8vh;
+  --signal-delay: 0.64s;
+  --enter-x: -86px;
+  --overshoot-x: 12px;
+}
+
+.signal-risk {
+  --suck-x: -44vw;
+  --suck-y: -8vh;
+  --signal-delay: 0.74s;
+  --enter-x: 86px;
+  --overshoot-x: -12px;
+}
+
+@keyframes signalPop {
+  0% {
+    opacity: 0;
+    scale: 0.78;
+    translate: var(--enter-x) 0;
+    filter: blur(8px);
+  }
+  72% {
+    opacity: 1;
+    scale: 1.06;
+    translate: var(--overshoot-x) 0;
+    filter: blur(0);
+  }
+  100% {
+    opacity: 1;
+    scale: 1;
+    translate: 0 0;
+    filter: blur(0);
+  }
+}
+
+@keyframes landingSignalSuck {
+  0% {
+    opacity: 1;
+    scale: 1;
+    translate: 0 0;
+  }
+  45% {
+    opacity: 0.95;
+    scale: 0.92;
+  }
+  78% {
+    opacity: 0.72;
+    scale: 0.62;
+  }
+  100% {
+    opacity: 0;
+    scale: 0.22;
+    translate: var(--suck-x) var(--suck-y);
+    filter: blur(5px);
+  }
+}
+
+.landing-signal-card {
+  animation:
+    signalPop 0.78s cubic-bezier(0.16, 1, 0.3, 1) var(--signal-delay) both,
+    landingFloat 5.5s ease-in-out calc(var(--signal-delay) + 0.84s) infinite;
+}
+
+@supports (animation-timeline: scroll()) {
+  .landing-signal {
+    animation:
+      landingSignalSuck linear both;
+    animation-timeline: scroll(root);
+    animation-range: 4vh 64vh;
+  }
+}
+
+@keyframes intakePulse {
+  0%,
+  100% {
+    opacity: 0.42;
+    scale: 0.9;
+  }
+  50% {
+    opacity: 0.85;
+    scale: 1.08;
+  }
+}
+
+.dashboard-intake {
+  animation: intakePulse 1.8s ease-in-out infinite;
+}
+
+.landing-stage {
+  background:
+    linear-gradient(180deg, rgba(255, 247, 246, 0.88), rgba(255, 255, 255, 0.96)),
+    radial-gradient(ellipse at 78% 78%, rgba(225, 29, 72, 0.32), transparent 54%),
+    radial-gradient(ellipse at 18% 18%, rgba(244, 114, 182, 0.18), transparent 46%);
+}
+
+.crimson-wave {
+  position: absolute;
+  top: 50%;
+  width: 76%;
+  border-radius: 999px;
+  filter: blur(18px);
+  transform: translateY(-50%);
+}
+
+.crimson-wave-a {
+  right: -18%;
+  height: 72%;
+  background: linear-gradient(90deg, rgba(251, 113, 133, 0), #fb7185 28%, #be123c 74%);
+  opacity: 0.95;
+}
+
+.crimson-wave-b {
+  right: 12%;
+  height: 55%;
+  background: linear-gradient(90deg, rgba(244, 63, 94, 0), rgba(244, 63, 94, 0.72), rgba(136, 19, 55, 0.9));
+  opacity: 0.72;
+}
+
+.crimson-wave-c {
+  right: 42%;
+  height: 34%;
+  background: linear-gradient(90deg, rgba(255, 228, 230, 0), rgba(251, 113, 133, 0.8), rgba(190, 18, 60, 0.55));
+  opacity: 0.74;
+}
+
+.crimson-stripe {
+  position: absolute;
+  top: 9%;
+  height: 82%;
+  width: 5px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0));
+  box-shadow: 0 0 22px rgba(255, 255, 255, 0.78);
+}
+
+@media (max-width: 1023px) {
+  .crimson-wave {
+    width: 105%;
+  }
+
+  .crimson-wave-a {
+    right: -36%;
+    height: 64%;
+    opacity: 0.72;
+  }
+
+  .crimson-wave-b {
+    right: -6%;
+    opacity: 0.52;
+  }
+
+  .crimson-wave-c {
+    right: 32%;
+    opacity: 0.5;
+  }
+}
+
 body {
   background: var(--background);
   color: var(--foreground);

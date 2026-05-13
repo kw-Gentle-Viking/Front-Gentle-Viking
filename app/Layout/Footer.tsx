@@ -1,6 +1,18 @@
+"use client";
+
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 export default function Footer() {
+  const pathname = usePathname();
+
+  const isStandalonePage =
+    pathname === '/' || pathname === '/login' || pathname === '/signup';
+
+  if (isStandalonePage) {
+    return null;
+  }
+
   return (
     <footer className="border-t border-slate-200/70 bg-white/80 backdrop-blur text-slate-700">
       <div className="mx-auto flex h-[52px] max-w-[1100px] items-center justify-between px-[24px] text-[12px] md:px-[32px]">

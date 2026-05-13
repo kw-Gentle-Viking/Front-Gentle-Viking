@@ -8,52 +8,12 @@ import {
   CandlestickData,
   UTCTimestamp,
   CandlestickSeries,
-  LogicalRange,
-  SeriesMarker,
 } from 'lightweight-charts';
 import { CandleType } from '@/lib/chart/types';
 
 type Props = {
   data: CandleType[];
 };
-
-function computeHighLowPoint(
-  data: CandlestickData<UTCTimestamp>[],
-  range: LogicalRange | null,
-) {
-  if (!range || data.length === 0) return null;
-
-  const from = Math.max(0, Math.floor(range.from));
-  const to = Math.min(data.length - 1, Math.ceil(range.to));
-
-  let hi = -Infinity;
-  let lo = Infinity;
-  let hiIdx = -1;
-  let loIdx = -1;
-
-  for (let i = from; i <= to; i++) {
-    const c = data[i];
-    if (!c) continue;
-
-    if (c.high > hi) {
-      hi = c.high;
-      hiIdx = i;
-    }
-    if (c.low < lo) {
-      lo = c.low;
-      loIdx = i;
-    }
-  }
-
-  if (hiIdx < 0 || loIdx < 0) return null;
-
-  return {
-    hi,
-    lo,
-    hiTime: data[hiIdx].time,
-    loTime: data[loIdx].time,
-  };
-}
 
 export default function CandleChart({ data }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
