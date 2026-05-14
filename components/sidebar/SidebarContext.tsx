@@ -18,7 +18,7 @@ export const SidebarProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<SidebarTab>("portfolio");
 
   const openSidebar = (tab: SidebarTab) => {

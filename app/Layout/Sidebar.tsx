@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { usePathname } from "next/navigation";
 import { useSidebar } from "@/components/sidebar/SidebarContext";
 import { LuPanelRightOpen } from "react-icons/lu";
 import { LuPanelLeftOpen } from "react-icons/lu";
@@ -9,7 +10,15 @@ import { FaHeart } from "react-icons/fa";
 import { IoTime } from "react-icons/io5";
 
 const Sidebar = () => {
+  const pathname = usePathname();
   const { isOpen, activeTab, openSidebar, closeSidebar } = useSidebar();
+
+  const isStandalonePage =
+    pathname === "/" || pathname === "/login" || pathname === "/signup";
+
+  if (isStandalonePage) {
+    return null;
+  }
 
   // 1. 아이콘 데이터 맵핑 (Context의 SidebarTab 타입과 일치)
   const tabs = [

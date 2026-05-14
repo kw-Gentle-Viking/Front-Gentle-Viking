@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { usePathname } from "next/navigation";
 import { useSidebar } from "@/components/sidebar/SidebarContext";
 
 export default function MainContainer({
@@ -8,9 +9,17 @@ export default function MainContainer({
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
   const { isOpen } = useSidebar();
 
   const sidebarWidth = isOpen ? "370px" : "56px";
+
+  const isStandalonePage =
+    pathname === "/" || pathname === "/login" || pathname === "/signup";
+
+  if (isStandalonePage) {
+    return <main className="min-h-screen bg-white">{children}</main>;
+  }
 
   return (
     <main

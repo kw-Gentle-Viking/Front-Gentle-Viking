@@ -13,10 +13,19 @@ export default function TradingWindowCard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setLoading(true);
+    let isMounted = true;
+
     loadCandlesFromCsv(`/${symbol}.csv`)
-      .then(setCandles)
-      .finally(() => setLoading(false));
+      .then((nextCandles) => {
+        if (isMounted) setCandles(nextCandles);
+      })
+      .finally(() => {
+        if (isMounted) setLoading(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
   }, [symbol]);
 
   return (
@@ -30,7 +39,10 @@ export default function TradingWindowCard() {
           <span className="text-slate-600">종목</span>
           <input
             value={symbol}
-            onChange={(e) => setSymbol(e.target.value)}
+            onChange={(e) => {
+              setLoading(true);
+              setSymbol(e.target.value);
+            }}
             className="w-24 rounded-lg border border-slate-200 bg-sky-50 px-2 py-1 text-slate-900 outline-none focus:border-blue-800 focus:ring-2 focus:ring-blue-800/10"
             placeholder="종목 코드"
           />

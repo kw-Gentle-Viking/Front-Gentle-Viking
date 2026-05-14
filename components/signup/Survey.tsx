@@ -88,30 +88,30 @@ export default function Survey({
         />
       </Question>
 
-      <div className="rounded-2xl border border-slate-200/70 bg-white p-3 shadow-sm">
+      <div className="rounded-2xl border border-indigo-100 bg-indigo-50/70 p-4 shadow-sm">
         <div className="text-sm font-extrabold text-slate-900">
           예상 투자성향
         </div>
         <div className="mt-1 text-sm">
-          <span className="font-extrabold text-blue-800">
+          <span className="font-extrabold text-indigo-700">
             {label}
           </span>{' '}
           <span className="text-slate-500">(score: {score})</span>
         </div>
       </div>
 
-      <div className="flex gap-2">
+      <div className="flex gap-3">
         <button
           type="button"
           onClick={onPrev}
-          className="flex-1 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50"
+          className="flex-1 rounded-2xl border border-slate-200 bg-white/80 px-4 py-3 text-sm font-bold text-slate-700 transition hover:bg-white"
         >
           이전
         </button>
         <button
           type="button"
           onClick={onSubmit}
-          className="flex-1 rounded-2xl bg-blue-800 px-4 py-3 text-sm font-extrabold text-white shadow-sm transition hover:bg-blue-700 active:bg-blue-900"
+          className="flex-1 rounded-2xl bg-gradient-to-r from-indigo-600 via-violet-600 to-sky-500 px-4 py-3 text-sm font-extrabold text-white shadow-[0_12px_30px_rgba(79,70,229,0.18)] transition hover:scale-[1.01]"
         >
           가입 완료
         </button>
@@ -128,7 +128,7 @@ function Question({
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-2xl border border-slate-200/70 bg-white p-4 shadow-sm">
+    <section className="rounded-2xl border border-slate-200/70 bg-white/76 p-4 shadow-sm">
       <div className="mb-2 text-sm font-extrabold text-slate-900">
         {title}
       </div>
@@ -153,14 +153,14 @@ function RadioRow<T extends string>({
       {options.map(([v, label]) => (
         <label
           key={v}
-          className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 transition hover:bg-sky-50"
+          className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-white/78 px-3 py-3 transition hover:border-indigo-200 hover:bg-indigo-50"
         >
           <input
             type="radio"
             name={name}
             checked={value === v}
             onChange={() => onChange(v)}
-            className="h-4 w-4 border-slate-300 text-blue-800 focus:ring-blue-800/20"
+            className="h-4 w-4 border-slate-300 text-indigo-600 focus:ring-indigo-500/20"
           />
           <span className="text-sm text-slate-700">{label}</span>
         </label>

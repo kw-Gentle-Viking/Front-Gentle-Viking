@@ -1,90 +1,114 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { IoSearchOutline } from "react-icons/io5";
 import { useSidebar } from "@/components/sidebar/SidebarContext";
-
-const AUTH_ROUTES = ["/login", "/signup"];
+import {
+  AUTH_EVENT_NAME,
+  AuthUser,
+  getCurrentUser,
+  logoutUser,
+} from "@/lib/auth";
 
 export default function Header() {
   const pathname = usePathname();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const isAuth = AUTH_ROUTES.some((r) => pathname.startsWith(r));
-  const { isOpen } = useSidebar();
-  const sidebarWidth = isAuth ? "0px" : isOpen ? "370px" : "56px";
+  const router = useRouter();
+  const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
+
+  useEffect(() => {
+    const syncAuth = () => setCurrentUser(getCurrentUser());
+
+    syncAuth();
+    window.addEventListener(AUTH_EVENT_NAME, syncAuth);
+    window.addEventListener("storage", syncAuth);
+
+    return () => {
+      window.removeEventListener(AUTH_EVENT_NAME, syncAuth);
+      window.removeEventListener("storage", syncAuth);
+    };
+  }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("gv-auth");
-    setIsLoggedIn(false);
-    location.href = "/";
+    logoutUser();
+    setCurrentUser(null);
+    router.push("/");
   };
 
+  const { isOpen } = useSidebar();
+  const sidebarWidth = isOpen ? "370px" : "56px";
+
+  const isStandalonePage =
+    pathname === "/" || pathname === "/login" || pathname === "/signup";
+
+  if (isStandalonePage) {
+    return null;
+  }
+
   const publicMenus = [
-    { name: "홈", href: "/" },
+    { name: "홈", href: currentUser ? "/dashboard" : "/" },
     { name: "AI 리포트", href: "/ai-report" },
   ];
 
-  const loggedInMenus = [
-    ...publicMenus,
-    { name: "내 포트폴리오", href: "/portfolio" },
+  const memberMenus = [
+    { name: "내 주식보기", href: "/portfolio" },
     { name: "마이페이지", href: "/mypage" },
   ];
 
+  const renderMenuLink = (menu: { name: string; href: string }) => {
+    const isActive = pathname === menu.href;
+
+    return (
+      <Link
+        key={menu.href}
+        href={menu.href}
+        className={`text-sm transition-colors ${
+          isActive
+            ? "text-[#333D4B] font-bold"
+            : "text-[#6B7684] font-medium hover:text-[#333D4B]"
+        }`}
+      >
+        {menu.name}
+      </Link>
+    );
+  };
+
   return (
     <header
-      className={`sticky top-0 z-50 px-6 h-[58px] flex items-center justify-between transition-all duration-300 ease-in-out border-b ${
-        isAuth ? "bg-[#BACFE8] border-transparent" : "bg-white border-gray-100"
-      }`}
+      className="sticky top-0 z-50 bg-white px-6 h-[58px] flex items-center
+    justify-between transition-all duration-300 ease-in-out border-b border-gray-100"
       style={{ width: `calc(100% - ${sidebarWidth})` }}
     >
-      {/* 1. 로고 및 네비게이션 */}
       <div className="flex items-center gap-8">
         <Link href="/" className="flex items-center gap-2">
-          <img
+          <Image
             src="/genvi.png"
             alt="Gentle Viking Logo"
+            width={128}
+            height={64}
+            priority
             className="h-16 w-auto object-contain"
           />
         </Link>
 
         <nav className="hidden md:flex items-center gap-6">
-          {publicMenus.map((menu) => {
-            const isActive = pathname === menu.href;
-            return (
-              <Link
-                key={menu.href}
-                href={menu.href}
-                className={`text-sm transition-colors ${
-                  isActive
-                    ? "text-[#333D4B] font-bold"
-                    : "text-[#6B7684] font-medium hover:text-[#333D4B]"
-                }`}
-              >
-                {menu.name}
-              </Link>
-            );
-          })}
+          {publicMenus.map(renderMenuLink)}
 
-          {isLoggedIn ? (
+          {currentUser ? (
             <>
-              {loggedInMenus.slice(2).map((menu) => {
-                const isActive = pathname === menu.href;
-                return (
-                  <Link
-                    key={menu.href}
-                    href={menu.href}
-                    className={`text-sm transition-colors ${
-                      isActive
-                        ? "text-[#333D4B] font-bold"
-                        : "text-[#6B7684] font-medium hover:text-[#333D4B]"
-                    }`}
-                  >
-                    {menu.name}
-                  </Link>
-                );
-              })}
+              {memberMenus.map(renderMenuLink)}
+              <span className="text-sm font-semibold text-slate-500">
+                {currentUser.nickname}님
+              </span>
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="text-sm font-semibold text-[#6B7684] transition-colors hover:text-[#333D4B]"
+              >
+                로그아웃
+              </button>
             </>
           ) : (
             <div className="flex items-center gap-0">
@@ -114,7 +138,6 @@ export default function Header() {
         </nav>
       </div>
 
-      {/* 2. 우측 검색 버튼 */}
       <div className="flex items-center gap-4">
         <div className="relative group">
           <input
@@ -124,14 +147,6 @@ export default function Header() {
           />
           <IoSearchOutline className="absolute left-3 top-2.5 text-gray-400 group-focus-within:text-black w-5 h-5" />
         </div>
-
-        {/* 개발 테스트용 버튼 (로그인/로그아웃 전환) */}
-        <button
-          onClick={() => setIsLoggedIn(!isLoggedIn)}
-          className="text-[10px] bg-slate-100 px-2 py-1 rounded text-slate-400 hover:bg-slate-200"
-        >
-          {isLoggedIn ? "로그아웃 됨" : "로그인 됨"}
-        </button>
       </div>
     </header>
   );

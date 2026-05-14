@@ -1,11 +1,15 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { IoChevronBackOutline } from 'react-icons/io5';
+import { FcGoogle } from 'react-icons/fc';
 
 import { BasicForm, RiskProfile } from '@/lib/signup/types';
 import SignupForm from '@/components/signup/SignupForm';
 import Survey from '@/components/signup/Survey';
+import { getCurrentUser, isEmailRegistered, signupUser } from '@/lib/auth';
 
 type Step = 1 | 2;
 
@@ -18,6 +22,10 @@ type PwRules = {
 
 function isEmailValid(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+}
+
+function isPhoneValid(phone: string) {
+  return /^\d{10,11}$/.test(phone.replace(/\D/g, ''));
 }
 
 function checkPassword(pw: string): PwRules {
@@ -38,6 +46,8 @@ const SignupPage = () => {
   const router = useRouter();
 
   const [step, setStep] = useState<Step>(1);
+  const [submitError, setSubmitError] = useState('');
+  const [emailChecked, setEmailChecked] = useState(false);
 
   const [basicForm, setBasicForm] = useState<BasicForm>({
     name: '',
@@ -71,10 +81,21 @@ const SignupPage = () => {
     consetRequired: false,
   });
 
+  useEffect(() => {
+    if (getCurrentUser()) {
+      router.replace('/dashboard');
+    }
+  }, [router]);
+
   const pwRules = useMemo(
     () => checkPassword(basicForm.pw1),
     [basicForm.pw1],
   );
+
+  const emailIsAlreadyRegistered = useMemo(() => {
+    if (!isEmailValid(basicForm.email)) return false;
+    return isEmailRegistered(basicForm.email);
+  }, [basicForm.email]);
 
   const basicErrors = useMemo(() => {
     const e: Partial<Record<keyof BasicForm, string>> = {};
@@ -86,6 +107,16 @@ const SignupPage = () => {
     if (!basicForm.email.trim()) e.email = '이메일을 입력해주세요.';
     else if (!isEmailValid(basicForm.email))
       e.email = '이메일 형식이 올바르지 않습니다.';
+    else if (emailIsAlreadyRegistered)
+      e.email = '이미 가입된 이메일입니다.';
+    else if (!emailChecked)
+      e.email = '이메일 중복체크를 완료해주세요.';
+
+    if (!basicForm.phone.trim())
+      e.phone = '휴대폰 번호를 입력해주세요.';
+    else if (!isPhoneValid(basicForm.phone))
+      e.phone = '휴대폰 번호는 숫자만 10~11자로 입력해주세요.';
+
     if (!basicForm.birthdate)
       e.birthdate = '생년월일을 선택해주세요.';
 
@@ -100,7 +131,7 @@ const SignupPage = () => {
       e.consetRequired = '필수 동의가 필요합니다.';
 
     return e;
-  }, [basicForm]);
+  }, [basicForm, emailChecked, emailIsAlreadyRegistered]);
 
   const canGoStep2 = useMemo(
     () => Object.keys(basicErrors).length === 0,
@@ -137,6 +168,11 @@ const SignupPage = () => {
     key: K,
     value: BasicForm[K],
   ) => {
+    if (key === 'email') {
+      setEmailChecked(false);
+      setSubmitError('');
+    }
+
     setBasicForm((prev) => ({
       ...prev,
       [key]: value,
@@ -156,79 +192,158 @@ const SignupPage = () => {
     );
   };
 
+  const onCheckEmail = () => {
+    markTouched('email');
+
+    if (!basicForm.email.trim() || !isEmailValid(basicForm.email)) {
+      setEmailChecked(false);
+      return;
+    }
+
+    setEmailChecked(!isEmailRegistered(basicForm.email));
+  };
+
   const onNext = () => {
     if (!canGoStep2) {
       markAllTouched();
       return;
     }
+    setSubmitError('');
     setStep(2);
   };
 
   const onPrev = () => setStep(1);
 
   const onSubmit = () => {
-    console.log('[basicForm]', basicForm);
-    console.log('[survey]', survey, { surveyScore, surveyLabel });
+    const result = signupUser({
+      basic: basicForm,
+      riskProfile: survey,
+      riskScore: surveyScore,
+      riskLabel: surveyLabel,
+    });
+
+    if (!result.ok) {
+      setSubmitError(result.message);
+      setStep(1);
+      markTouched('email');
+      return;
+    }
 
     alert(
-      `가입 완료(데모)\n\n투자성향: ${surveyLabel} (score: ${surveyScore})`,
+      `가입이 완료되었습니다.\n\n${result.user.nickname}님의 투자성향: ${surveyLabel} (score: ${surveyScore})`,
     );
-    router.push('/');
+    router.push('/dashboard');
   };
 
   return (
-    <div className="flex flex-1 items-center justify-center bg-gradient-to-b from-[#BACFE8] to-[#CADcF2] px-4 py-12">
-      <div className="w-full max-w-[520px] rounded-2xl bg-white/90 p-8 shadow-md backdrop-blur-sm">
-        <div className="mb-6">
-          <h1 className="text-center text-2xl font-bold text-slate-800">
-            회원가입{' '}
-            <span className="text-slate-400 text-sm font-semibold">
-              {step === 1 ? '1/2' : '2/2'}
-            </span>
-          </h1>
-          <p className="mt-1 text-center text-xs text-slate-500">
-            기본 정보 입력 후 투자성향 설문을 진행합니다.
-          </p>
+    <main className="auth-shell min-h-screen px-5 py-8 text-slate-950">
+      <button
+        type="button"
+        onClick={() => router.back()}
+        className="landing-enter landing-enter-1 fixed left-5 top-5 z-30 inline-flex h-11 items-center gap-2 rounded-full border border-white/40 bg-white/20 px-4 text-sm font-black text-white shadow-sm backdrop-blur-xl transition hover:bg-white/30"
+      >
+        <IoChevronBackOutline className="h-5 w-5" />
+        뒤로가기
+      </button>
+
+      <section className="mx-auto flex min-h-[calc(100vh-64px)] w-full max-w-[460px] flex-col items-center justify-start pb-10 pt-12 sm:pt-16">
+        <div className="landing-enter landing-enter-2 mb-6 flex justify-center">
+          <Image
+            src="/genvi_white.png"
+            alt="Genvi"
+            width={108}
+            height={32}
+            priority
+            className="h-auto w-[108px] object-contain"
+          />
         </div>
 
-        {step === 1 ? (
-          <SignupForm
-            value={basicForm}
-            touched={touched}
-            errors={basicErrors}
-            pwRules={pwRules}
-            onChange={setField}
-            onBlur={markTouched}
-            onBack={() => router.back()}
-            onNext={onNext}
-            nextDisabled={!canGoStep2}
-          />
-        ) : (
-          <Survey
-            value={survey}
-            onChange={setSurvey}
-            score={surveyScore}
-            label={surveyLabel}
-            onPrev={onPrev}
-            onSubmit={onSubmit}
-          />
-        )}
+        <section className="landing-enter landing-enter-4 relative w-full rounded-[26px] border border-white/70 bg-white/90 p-7 shadow-[0_26px_80px_rgba(49,46,129,0.18)] backdrop-blur-2xl sm:p-9">
+          <span className="absolute right-5 top-5 rounded-full bg-slate-950 px-4 py-2 text-xs font-black text-white">
+            {step}/2
+          </span>
 
-        <div className="mt-5 flex justify-center gap-2">
-          {[1, 2].map((n) => (
-            <span
-              key={n}
-              className={[
-                'h-2.5 w-2.5 rounded-full border transition',
-                step === n
-                  ? 'border-blue-800 bg-blue-800 opacity-100'
-                  : 'border-slate-300 bg-transparent opacity-40',
-              ].join(' ')}
+          <div className="mb-7 text-center">
+            <h1 className="text-3xl font-black tracking-normal text-slate-950">
+              회원가입
+            </h1>
+            <p className="mt-3 text-xs font-black uppercase tracking-[0.18em] text-indigo-500">
+              {step === 1 ? 'Basic information' : 'Risk profile'}
+            </p>
+            <p className="mt-2 text-sm leading-6 text-slate-500">
+              {step === 1
+                ? '기본 정보를 입력해주세요.'
+                : '투자 성향에 맞는 화면 구성을 준비합니다.'}
+            </p>
+          </div>
+
+          {submitError && (
+            <p className="mb-4 rounded-2xl bg-rose-50 px-4 py-3 text-xs font-bold text-rose-600">
+              {submitError}
+            </p>
+          )}
+
+          {step === 1 && (
+            <>
+              <button
+                type="button"
+                className="mb-5 inline-flex h-13 w-full items-center justify-center gap-3 rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm font-black text-slate-700 shadow-sm transition hover:border-indigo-200 hover:bg-indigo-50/40"
+                aria-label="구글로 회원가입"
+              >
+                <FcGoogle className="h-5 w-5" />
+                Google로 계속하기
+              </button>
+
+              <div className="mb-5 flex items-center gap-3 text-xs font-bold text-slate-400">
+                <span className="h-px flex-1 bg-slate-200" />
+                또는
+                <span className="h-px flex-1 bg-slate-200" />
+              </div>
+            </>
+          )}
+
+          {step === 1 ? (
+            <SignupForm
+              value={basicForm}
+              touched={touched}
+              errors={basicErrors}
+              pwRules={pwRules}
+              onChange={setField}
+              onBlur={markTouched}
+              onBack={() => router.back()}
+              onNext={onNext}
+              nextDisabled={!canGoStep2}
+              emailChecked={emailChecked}
+              emailIsAlreadyRegistered={emailIsAlreadyRegistered}
+              onCheckEmail={onCheckEmail}
             />
-          ))}
-        </div>
-      </div>
-    </div>
+          ) : (
+            <Survey
+              value={survey}
+              onChange={setSurvey}
+              score={surveyScore}
+              label={surveyLabel}
+              onPrev={onPrev}
+              onSubmit={onSubmit}
+            />
+          )}
+
+          <div className="mt-7 flex justify-center gap-2">
+            {[1, 2].map((n) => (
+              <span
+                key={n}
+                className={[
+                  'h-2.5 rounded-full border transition-all',
+                  step === n
+                    ? 'w-8 border-indigo-600 bg-indigo-600 opacity-100'
+                    : 'border-slate-300 bg-transparent opacity-40',
+                ].join(' ')}
+              />
+            ))}
+          </div>
+        </section>
+      </section>
+    </main>
   );
 };
 
