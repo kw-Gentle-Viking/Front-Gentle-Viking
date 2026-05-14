@@ -1,20 +1,20 @@
-import { BasicForm, RiskProfile } from '@/lib/signup/types';
+import { BasicForm, RiskProfile } from "@/lib/signup/types";
 
-export const AUTH_EVENT_NAME = 'gv-auth-change';
+export const AUTH_EVENT_NAME = "gv-auth-change";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000';
+const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
-const USERS_KEY = 'gv-users';
-const SESSION_KEY = 'gv-session';
-const LEGACY_AUTH_KEY = 'gv-auth';
-const ACCESS_TOKEN_KEY = 'gv-access-token';
-const REFRESH_TOKEN_KEY = 'gv-refresh-token';
+const USERS_KEY = "gv-users";
+const SESSION_KEY = "gv-session";
+const LEGACY_AUTH_KEY = "gv-auth";
+const ACCESS_TOKEN_KEY = "gv-access-token";
+const REFRESH_TOKEN_KEY = "gv-refresh-token";
 
 export type StoredUser = {
   id: string;
   name: string;
   email: string;
-  password: string;
+  password?: string;
   nickname: string;
   birthdate: string;
   phone: string;
@@ -25,7 +25,7 @@ export type StoredUser = {
   createdAt: string;
 };
 
-export type AuthUser = Omit<StoredUser, 'password'>;
+export type AuthUser = Omit<StoredUser, "password">;
 
 type LoginResult =
   | { ok: true; user: AuthUser }
@@ -36,28 +36,28 @@ type SignupResult =
   | { ok: false; message: string };
 
 const DEMO_USER: StoredUser = {
-  id: 'demo-user',
-  name: '테스트 사용자',
-  email: 'test@gentleviking.com',
-  password: '1234',
-  nickname: '젠틀바이킹',
-  birthdate: '1990-01-01',
-  phone: '01012345678',
+  id: "demo-user",
+  name: "테스트 사용자",
+  email: "test@gentleviking.com",
+  password: "1234",
+  nickname: "젠틀바이킹",
+  birthdate: "1990-01-01",
+  phone: "01012345678",
   consentRequired: true,
   riskProfile: {
-    goal: 'STABLE',
-    horizon: 'Y1TO3',
-    lossTolerance: 'LT10',
-    experience: 'STOCK_ETF',
-    volatility: 'MID',
+    goal: "STABLE",
+    horizon: "Y1TO3",
+    lossTolerance: "LT10",
+    experience: "STOCK_ETF",
+    volatility: "MID",
   },
   riskScore: 12,
-  riskLabel: '위험중립형',
-  createdAt: '2026-01-01T00:00:00.000Z',
+  riskLabel: "위험중립형",
+  createdAt: "2026-01-01T00:00:00.000Z",
 };
 
 function canUseStorage() {
-  return typeof window !== 'undefined' && Boolean(window.localStorage);
+  return typeof window !== "undefined" && Boolean(window.localStorage);
 }
 
 function normalizeEmail(email: string) {
@@ -105,27 +105,22 @@ function readUsers(): StoredUser[] {
 
 function writeUsers(users: StoredUser[]) {
   if (!canUseStorage()) return;
-  window.localStorage.setItem(USERS_KEY, JSON.stringify(users));
+  const sanitized = users.map(({ password: _pw, ...rest }) => rest);
+  window.localStorage.setItem(USERS_KEY, JSON.stringify(sanitized));
 }
 
 function writeSession(email: string) {
   if (!canUseStorage()) return;
   window.localStorage.setItem(SESSION_KEY, normalizeEmail(email));
-  window.localStorage.setItem(LEGACY_AUTH_KEY, 'true');
+  window.localStorage.setItem(LEGACY_AUTH_KEY, "true");
   notifyAuthChange();
-}
-
-export function getUsers() {
-  return readUsers().map(toAuthUser);
 }
 
 export function isEmailRegistered(email: string) {
   const targetEmail = normalizeEmail(email);
   if (!targetEmail) return false;
 
-  return readUsers().some(
-    (user) => normalizeEmail(user.email) === targetEmail,
-  );
+  return readUsers().some((user) => normalizeEmail(user.email) === targetEmail);
 }
 
 export function signupUser({
@@ -144,7 +139,8 @@ export function signupUser({
   if (isEmailRegistered(email)) {
     return {
       ok: false,
-      message: '이미 가입된 이메일입니다. 로그인하거나 다른 이메일을 사용해주세요.',
+      message:
+        "이미 가입된 이메일입니다. 로그인하거나 다른 이메일을 사용해주세요.",
     };
   }
 
@@ -156,7 +152,7 @@ export function signupUser({
     password: basic.pw1,
     nickname: basic.nickname.trim(),
     birthdate: basic.birthdate,
-    phone: basic.phone.replace(/\D/g, ''),
+    phone: basic.phone.replace(/\D/g, ""),
     consentRequired: basic.consetRequired,
     riskProfile,
     riskScore,
@@ -177,7 +173,10 @@ export async function loginUser(
   // 데모 계정은 API 없이 로컬에서 처리
   if (normalizeEmail(email) === normalizeEmail(DEMO_USER.email)) {
     if (password !== DEMO_USER.password) {
-      return { ok: false, message: '이메일 또는 비밀번호가 올바르지 않습니다.' };
+      return {
+        ok: false,
+        message: "이메일 또는 비밀번호가 올바르지 않습니다.",
+      };
     }
     writeSession(DEMO_USER.email);
     return { ok: true, user: toAuthUser(DEMO_USER) };
@@ -185,22 +184,25 @@ export async function loginUser(
 
   try {
     const res = await fetch(`${API_BASE}/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
     });
 
     if (res.status === 401) {
-      return { ok: false, message: '이메일 또는 비밀번호가 올바르지 않습니다.' };
+      return {
+        ok: false,
+        message: "이메일 또는 비밀번호가 올바르지 않습니다.",
+      };
     }
     if (res.status === 422) {
-      return { ok: false, message: '입력값을 확인해주세요.' };
+      return { ok: false, message: "입력값을 확인해주세요." };
     }
     if (!res.ok) {
-      return { ok: false, message: '로그인 중 오류가 발생했습니다.' };
+      return { ok: false, message: "로그인 중 오류가 발생했습니다." };
     }
 
-    const tokens = await res.json() as {
+    const tokens = (await res.json()) as {
       access_token: string;
       refresh_token: string;
       token_type: string;
@@ -224,27 +226,46 @@ export async function loginUser(
     // 백엔드에만 존재하는 유저 — JWT에서 기본 정보 추출
     let userId = normalizedEmail;
     try {
-      const payload = JSON.parse(atob(tokens.access_token.split('.')[1]));
+      const payload = JSON.parse(atob(tokens.access_token.split(".")[1]));
       userId = payload.sub ?? userId;
-    } catch { /* JWT 디코딩 실패 시 이메일 사용 */ }
+    } catch {
+      /* JWT 디코딩 실패 시 이메일 사용 */
+    }
 
     const fallbackUser: AuthUser = {
       id: userId,
-      name: normalizedEmail.split('@')[0],
+      name: normalizedEmail.split("@")[0],
       email: normalizedEmail,
-      nickname: normalizedEmail.split('@')[0],
-      birthdate: '',
-      phone: '',
+      nickname: normalizedEmail.split("@")[0],
+      birthdate: "",
+      phone: "",
       consentRequired: true,
-      riskProfile: { goal: 'PRESERVE', horizon: 'LT3M', lossTolerance: 'LT5', experience: 'NONE', volatility: 'LOW' },
+      riskProfile: {
+        goal: "PRESERVE",
+        horizon: "LT3M",
+        lossTolerance: "LT5",
+        experience: "NONE",
+        volatility: "LOW",
+      },
       riskScore: 5,
-      riskLabel: '안정형',
+      riskLabel: "안정형",
       createdAt: new Date().toISOString(),
     };
 
+    const existingUsers = readUsers();
+    const alreadyStored = existingUsers.some(
+      (u) => normalizeEmail(u.email) === normalizedEmail,
+    );
+    if (!alreadyStored) {
+      writeUsers([...existingUsers, fallbackUser as StoredUser]);
+    }
+
     return { ok: true, user: fallbackUser };
   } catch {
-    return { ok: false, message: '서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요.' };
+    return {
+      ok: false,
+      message: "서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요.",
+    };
   }
 }
 
@@ -256,8 +277,8 @@ export async function logoutUser() {
   if (refreshToken) {
     try {
       await fetch(`${API_BASE}/auth/logout`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ refresh_token: refreshToken }),
       });
     } catch {
@@ -276,6 +297,76 @@ export async function logoutUser() {
 export function getAccessToken(): string | null {
   if (!canUseStorage()) return null;
   return window.localStorage.getItem(ACCESS_TOKEN_KEY);
+}
+
+// access token 만료 시 refresh token으로 새 토큰 발급
+export async function refreshTokens(): Promise<boolean> {
+  const refreshToken = canUseStorage()
+    ? window.localStorage.getItem(REFRESH_TOKEN_KEY)
+    : null;
+
+  if (!refreshToken) return false;
+
+  try {
+    const res = await fetch(`${API_BASE}/auth/refresh`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ refresh_token: refreshToken }),
+    });
+
+    if (!res.ok) {
+      // refresh token도 만료 또는 무효 → 강제 로그아웃
+      await logoutUser();
+      return false;
+    }
+
+    const tokens = (await res.json()) as {
+      access_token: string;
+      refresh_token: string;
+      token_type: string;
+    };
+
+    if (canUseStorage()) {
+      window.localStorage.setItem(ACCESS_TOKEN_KEY, tokens.access_token);
+      window.localStorage.setItem(REFRESH_TOKEN_KEY, tokens.refresh_token);
+    }
+
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+// 인증이 필요한 API 호출 래퍼 — 401 시 토큰 갱신 후 1회 재시도
+export async function apiFetch(
+  input: RequestInfo,
+  init?: RequestInit,
+): Promise<Response> {
+  const accessToken = getAccessToken();
+
+  const headers = new Headers(init?.headers);
+  if (accessToken) headers.set("Authorization", `Bearer ${accessToken}`);
+
+  const res = await fetch(input, { ...init, headers });
+
+  if (res.status !== 401) return res;
+
+  // 데모 계정은 토큰 갱신 없이 그대로 반환
+  const sessionEmail = canUseStorage()
+    ? window.localStorage.getItem(SESSION_KEY)
+    : null;
+  if (sessionEmail === normalizeEmail(DEMO_USER.email)) return res;
+
+  // access token 만료 → refresh 시도
+  const refreshed = await refreshTokens();
+  if (!refreshed) return res;
+
+  // 새 토큰으로 재시도
+  const newToken = getAccessToken();
+  const retryHeaders = new Headers(init?.headers);
+  if (newToken) retryHeaders.set("Authorization", `Bearer ${newToken}`);
+
+  return fetch(input, { ...init, headers: retryHeaders });
 }
 
 export function getCurrentUser(): AuthUser | null {
