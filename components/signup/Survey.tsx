@@ -9,6 +9,7 @@ export default function Survey({
   label,
   onPrev,
   onSubmit,
+  isSubmitting = false,
 }: {
   value: RiskProfile;
   onChange: (next: RiskProfile) => void;
@@ -16,6 +17,7 @@ export default function Survey({
   label: string;
   onPrev: () => void;
   onSubmit: () => void;
+  isSubmitting?: boolean;
 }) {
   return (
     <div className="space-y-4">
@@ -111,9 +113,10 @@ export default function Survey({
         <button
           type="button"
           onClick={onSubmit}
-          className="flex-1 rounded-2xl bg-gradient-to-r from-indigo-600 via-violet-600 to-sky-500 px-4 py-3 text-sm font-extrabold text-white shadow-[0_12px_30px_rgba(79,70,229,0.18)] transition hover:scale-[1.01]"
+          disabled={isSubmitting}
+          className="flex-1 rounded-2xl bg-gradient-to-r from-indigo-600 via-violet-600 to-sky-500 px-4 py-3 text-sm font-extrabold text-white shadow-[0_12px_30px_rgba(79,70,229,0.18)] transition hover:scale-[1.01] disabled:opacity-60 disabled:cursor-not-allowed"
         >
-          가입 완료
+          {isSubmitting ? '가입 중...' : '가입 완료'}
         </button>
       </div>
     </div>

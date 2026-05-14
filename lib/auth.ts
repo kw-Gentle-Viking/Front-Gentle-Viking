@@ -35,6 +35,17 @@ type SignupResult =
   | { ok: true; user: AuthUser }
   | { ok: false; message: string };
 
+type SignupApiResponse = {
+  id: number;
+  email: string;
+  name: string;
+  nickname: string;
+  phone: string;
+  birth_date: string;
+  risk_score: number;
+  created_at: string;
+};
+
 const DEMO_USER: StoredUser = {
   id: "demo-user",
   name: "테스트 사용자",
@@ -123,47 +134,86 @@ export function isEmailRegistered(email: string) {
   return readUsers().some((user) => normalizeEmail(user.email) === targetEmail);
 }
 
-export function signupUser({
+const RISK_INT_MAP = {
+  goal:          { PRESERVE: 1, STABLE: 2, GROWTH: 3, AGGRESSIVE: 4 },
+  horizon:       { LT3M: 1, M3TO12: 2, Y1TO3: 3, GT3Y: 4 },
+  lossTolerance: { LT5: 1, LT10: 2, LT20: 3, GT30: 4 },
+  experience:    { NONE: 1, SAVING: 2, STOCK_ETF: 3, DERIV_CRYPTO: 4 },
+  volatility:    { LOW: 1, MID: 2, HIGH: 3 },
+} as const;
+
+function riskScoreToLabel(score: number): string {
+  if (score <= 8)  return "안정형";
+  if (score <= 11) return "안정추구형";
+  if (score <= 14) return "위험중립형";
+  if (score <= 17) return "적극투자형";
+  return "공격투자형";
+}
+
+export async function signupUser({
   basic,
   riskProfile,
-  riskScore,
-  riskLabel,
 }: {
   basic: BasicForm;
   riskProfile: RiskProfile;
   riskScore: number;
   riskLabel: string;
-}): SignupResult {
+}): Promise<SignupResult> {
   const email = normalizeEmail(basic.email);
 
-  if (isEmailRegistered(email)) {
-    return {
-      ok: false,
-      message:
-        "이미 가입된 이메일입니다. 로그인하거나 다른 이메일을 사용해주세요.",
+  try {
+    const res = await fetch(`${API_BASE}/users`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name:                  basic.name.trim(),
+        nickname:              basic.nickname.trim(),
+        email,
+        phone:                 basic.phone.replace(/\D/g, ""),
+        password:              basic.pw1,
+        birth_date:            basic.birthdate,
+        investment_goal:       RISK_INT_MAP.goal[riskProfile.goal],
+        investment_period:     RISK_INT_MAP.horizon[riskProfile.horizon],
+        risk_tolerance:        RISK_INT_MAP.lossTolerance[riskProfile.lossTolerance],
+        investment_experience: RISK_INT_MAP.experience[riskProfile.experience],
+        volatility_preference: RISK_INT_MAP.volatility[riskProfile.volatility],
+      }),
+    });
+
+    if (res.status === 409) {
+      return { ok: false, message: "이미 가입된 이메일입니다. 로그인하거나 다른 이메일을 사용해주세요." };
+    }
+    if (res.status === 422) {
+      return { ok: false, message: "입력값을 확인해주세요." };
+    }
+    if (!res.ok) {
+      return { ok: false, message: "회원가입 중 오류가 발생했습니다." };
+    }
+
+    const data = await res.json() as SignupApiResponse;
+    const riskLabel = riskScoreToLabel(data.risk_score);
+
+    const user: StoredUser = {
+      id:              String(data.id),
+      name:            data.name,
+      email:           normalizeEmail(data.email),
+      nickname:        data.nickname,
+      birthdate:       data.birth_date,
+      phone:           data.phone,
+      consentRequired: basic.consetRequired,
+      riskProfile,
+      riskScore:       data.risk_score,
+      riskLabel,
+      createdAt:       data.created_at,
     };
+
+    writeUsers([...readUsers(), user]);
+    writeSession(user.email);
+
+    return { ok: true, user: toAuthUser(user) };
+  } catch {
+    return { ok: false, message: "서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요." };
   }
-
-  const users = readUsers();
-  const user: StoredUser = {
-    id: `user-${Date.now()}`,
-    name: basic.name.trim(),
-    email,
-    password: basic.pw1,
-    nickname: basic.nickname.trim(),
-    birthdate: basic.birthdate,
-    phone: basic.phone.replace(/\D/g, ""),
-    consentRequired: basic.consetRequired,
-    riskProfile,
-    riskScore,
-    riskLabel,
-    createdAt: new Date().toISOString(),
-  };
-
-  writeUsers([...users, user]);
-  writeSession(user.email);
-
-  return { ok: true, user: toAuthUser(user) };
 }
 
 export async function loginUser(
