@@ -29,7 +29,7 @@ const Login = () => {
     }
   }, [router]);
 
-  const handleLogin = (event: FormEvent<HTMLFormElement>) => {
+  const handleLogin = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setError('');
 
@@ -39,7 +39,7 @@ const Login = () => {
     }
 
     setIsSubmitting(true);
-    const result = loginUser(email, password);
+    const result = await loginUser(email, password);
     setIsSubmitting(false);
 
     if (!result.ok) {

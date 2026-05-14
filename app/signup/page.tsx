@@ -47,6 +47,7 @@ const SignupPage = () => {
 
   const [step, setStep] = useState<Step>(1);
   const [submitError, setSubmitError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [emailChecked, setEmailChecked] = useState(false);
 
   const [basicForm, setBasicForm] = useState<BasicForm>({
@@ -214,13 +215,18 @@ const SignupPage = () => {
 
   const onPrev = () => setStep(1);
 
-  const onSubmit = () => {
-    const result = signupUser({
+  const onSubmit = async () => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+
+    const result = await signupUser({
       basic: basicForm,
       riskProfile: survey,
       riskScore: surveyScore,
       riskLabel: surveyLabel,
     });
+
+    setIsSubmitting(false);
 
     if (!result.ok) {
       setSubmitError(result.message);
@@ -230,7 +236,7 @@ const SignupPage = () => {
     }
 
     alert(
-      `가입이 완료되었습니다.\n\n${result.user.nickname}님의 투자성향: ${surveyLabel} (score: ${surveyScore})`,
+      `가입이 완료되었습니다.\n\n${result.user.nickname}님의 투자성향: ${result.user.riskLabel} (score: ${result.user.riskScore})`,
     );
     router.push('/dashboard');
   };
@@ -325,6 +331,7 @@ const SignupPage = () => {
               label={surveyLabel}
               onPrev={onPrev}
               onSubmit={onSubmit}
+              isSubmitting={isSubmitting}
             />
           )}
 

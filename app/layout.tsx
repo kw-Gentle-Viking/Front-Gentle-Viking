@@ -3,8 +3,7 @@ import type { Metadata } from "next";
 import { SidebarProvider } from "../components/sidebar/SidebarContext";
 import Header from "./Layout/Header";
 import Footer from "./Layout/Footer";
-import Sidebar from "./Layout/Sidebar";
-import MainContainer from "./Layout/MainContainer";
+import LayoutBody from "./Layout/LayoutBody";
 
 export const metadata: Metadata = {
   title: "Gentle Viking",
@@ -22,8 +21,7 @@ export default function RootLayout({
         <SidebarProvider>
           <div className="min-h-screen flex flex-col relative">
             <Header />
-            <Sidebar />
-            <MainContainer>{children}</MainContainer>
+            <LayoutBody>{children}</LayoutBody>
             <Footer />
           </div>
         </SidebarProvider>
