@@ -9,7 +9,7 @@ import { FcGoogle } from 'react-icons/fc';
 import { BasicForm, RiskProfile } from '@/lib/signup/types';
 import SignupForm from '@/components/signup/SignupForm';
 import Survey from '@/components/signup/Survey';
-import { getCurrentUser, isEmailRegistered, signupUser } from '@/lib/auth';
+import { getCurrentUser, googleLogin, isEmailRegistered, signupUser } from '@/lib/auth';
 
 type Step = 1 | 2;
 
@@ -58,7 +58,7 @@ const SignupPage = () => {
     nickname: '',
     birthdate: '',
     phone: '',
-    consetRequired: false,
+    consentRequired: false,
   });
 
   const [survey, setSurvey] = useState<RiskProfile>({
@@ -79,7 +79,7 @@ const SignupPage = () => {
     nickname: false,
     birthdate: false,
     phone: false,
-    consetRequired: false,
+    consentRequired: false,
   });
 
   useEffect(() => {
@@ -128,8 +128,8 @@ const SignupPage = () => {
     else if (basicForm.pw2 !== basicForm.pw1)
       e.pw2 = '비밀번호가 일치하지 않습니다.';
 
-    if (!basicForm.consetRequired)
-      e.consetRequired = '필수 동의가 필요합니다.';
+    if (!basicForm.consentRequired)
+      e.consentRequired = '필수 동의가 필요합니다.';
 
     return e;
   }, [basicForm, emailChecked, emailIsAlreadyRegistered]);
@@ -140,28 +140,31 @@ const SignupPage = () => {
   );
 
   const surveyScore = useMemo(() => {
-    let s = 0;
-    s += (
-      { PRESERVE: 1, STABLE: 2, GROWTH: 3, AGGRESSIVE: 4 } as const
-    )[survey.goal];
-    s += ({ LT3M: 1, M3TO12: 2, Y1TO3: 3, GT3Y: 4 } as const)[
-      survey.horizon
-    ];
-    s += ({ LT5: 1, LT10: 2, LT20: 3, GT30: 4 } as const)[
-      survey.lossTolerance
-    ];
-    s += (
-      { NONE: 1, SAVING: 2, STOCK_ETF: 3, DERIV_CRYPTO: 4 } as const
-    )[survey.experience];
-    s += ({ LOW: 1, MID: 2, HIGH: 3 } as const)[survey.volatility];
-    return s;
+    const goal       = ({ PRESERVE: 1, STABLE: 2, GROWTH: 3, AGGRESSIVE: 4 } as const)[survey.goal];
+    const period     = ({ LT3M: 1, M3TO12: 2, Y1TO3: 3, GT3Y: 4 } as const)[survey.horizon];
+    const tolerance  = ({ LT5: 1, LT10: 2, LT20: 3, GT30: 4 } as const)[survey.lossTolerance];
+    const experience = ({ NONE: 1, SAVING: 2, STOCK_ETF: 3, DERIV_CRYPTO: 4 } as const)[survey.experience];
+    const volatility = ({ LOW: 1, MID: 2, HIGH: 3 } as const)[survey.volatility];
+
+    const weighted =
+      ((goal - 1) / 3) * 100 * 0.20 +
+      ((period - 1) / 3) * 100 * 0.10 +
+      ((tolerance - 1) / 3) * 100 * 0.30 +
+      ((experience - 1) / 3) * 100 * 0.15 +
+      ((volatility - 1) / 2) * 100 * 0.25;
+
+    let grade = weighted <= 20 ? 1 : weighted <= 40 ? 2 : weighted <= 60 ? 3 : weighted <= 80 ? 4 : 5;
+
+    // 손실 감내 최하(LT5)이면 최대 안정추구형(2)으로 제한
+    if (tolerance === 1) grade = Math.min(2, grade);
+    return grade;
   }, [survey]);
 
   const surveyLabel = useMemo(() => {
-    if (surveyScore <= 8) return '안정형';
-    if (surveyScore <= 11) return '안정추구형';
-    if (surveyScore <= 14) return '위험중립형';
-    if (surveyScore <= 17) return '적극투자형';
+    if (surveyScore <= 1) return '안정형';
+    if (surveyScore <= 2) return '안정추구형';
+    if (surveyScore <= 3) return '위험중립형';
+    if (surveyScore <= 4) return '적극투자형';
     return '공격투자형';
   }, [surveyScore]);
 
@@ -293,6 +296,7 @@ const SignupPage = () => {
             <>
               <button
                 type="button"
+                onClick={googleLogin}
                 className="mb-5 inline-flex h-13 w-full items-center justify-center gap-3 rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm font-black text-slate-700 shadow-sm transition hover:border-indigo-200 hover:bg-indigo-50/40"
                 aria-label="구글로 회원가입"
               >

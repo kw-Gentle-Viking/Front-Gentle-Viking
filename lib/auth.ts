@@ -432,11 +432,8 @@ export function getCurrentUser(): AuthUser | null {
   return matchedUser ? toAuthUser(matchedUser) : null;
 }
 
-export async function googleLogin(): Promise<void> {
-  const res = await fetch(`${API_BASE}/auth/google/login`);
-  if (!res.ok) throw new Error('Google 로그인을 시작할 수 없습니다.');
-  const redirectUrl = await res.json() as string;
-  window.location.href = redirectUrl;
+export function googleLogin(): void {
+  window.location.href = `${API_BASE}/auth/google/login`;
 }
 
 export async function handleGoogleCallback(

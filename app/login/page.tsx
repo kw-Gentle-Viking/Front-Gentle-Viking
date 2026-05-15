@@ -13,7 +13,7 @@ import {
   IoMailOutline,
 } from 'react-icons/io5';
 import { FcGoogle } from 'react-icons/fc';
-import { getCurrentUser, loginUser } from '@/lib/auth';
+import { getCurrentUser, googleLogin, loginUser } from '@/lib/auth';
 
 const Login = () => {
   const router = useRouter();
@@ -22,6 +22,12 @@ const Login = () => {
   const [error, setError] = useState('');
   const [showPw, setShowPw] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+
+  const handleGoogleLogin = () => {
+    setIsGoogleLoading(true);
+    googleLogin();
+  };
 
   useEffect(() => {
     if (getCurrentUser()) {
@@ -167,11 +173,13 @@ const Login = () => {
 
           <button
             type="button"
-            className="inline-flex h-13 w-full items-center justify-center gap-3 rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm font-black text-slate-700 shadow-sm transition hover:border-indigo-200 hover:bg-indigo-50/40"
+            onClick={handleGoogleLogin}
+            disabled={isGoogleLoading || isSubmitting}
+            className="inline-flex h-13 w-full items-center justify-center gap-3 rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm font-black text-slate-700 shadow-sm transition hover:border-indigo-200 hover:bg-indigo-50/40 disabled:cursor-not-allowed disabled:opacity-60"
             aria-label="구글로 로그인"
           >
             <FcGoogle className="h-5 w-5" />
-            Google로 계속하기
+            {isGoogleLoading ? 'Google 연결 중...' : 'Google로 계속하기'}
           </button>
 
           <div className="mt-5 text-center text-sm font-semibold text-slate-500">
