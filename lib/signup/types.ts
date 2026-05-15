@@ -6,7 +6,7 @@ export type BasicForm = {
   nickname: string;
   birthdate: string;
   phone: string;
-  consetRequired: boolean;
+  consentRequired: boolean;
 };
 
 export type RiskProfile = {

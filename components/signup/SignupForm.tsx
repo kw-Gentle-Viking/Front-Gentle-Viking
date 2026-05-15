@@ -226,11 +226,11 @@ export default function SignupForm({
         <label className="mt-3 flex items-center gap-2">
           <input
             type="checkbox"
-            checked={value.consetRequired}
+            checked={value.consentRequired}
             onChange={(e) =>
-              onChange('consetRequired', e.target.checked)
+              onChange('consentRequired', e.target.checked)
             }
-            onBlur={() => onBlur('consetRequired')}
+            onBlur={() => onBlur('consentRequired')}
             className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500/20"
           />
           <span className="text-sm text-slate-700">
@@ -238,8 +238,8 @@ export default function SignupForm({
           </span>
         </label>
 
-        {touched.consetRequired && errors.consetRequired && (
-          <ErrorText text={errors.consetRequired} />
+        {touched.consentRequired && errors.consentRequired && (
+          <ErrorText text={errors.consentRequired} />
         )}
       </div>
         </StepIn>

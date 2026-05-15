@@ -143,10 +143,10 @@ const RISK_INT_MAP = {
 } as const;
 
 function riskScoreToLabel(score: number): string {
-  if (score <= 8)  return "안정형";
-  if (score <= 11) return "안정추구형";
-  if (score <= 14) return "위험중립형";
-  if (score <= 17) return "적극투자형";
+  if (score <= 1) return "안정형";
+  if (score <= 2) return "안정추구형";
+  if (score <= 3) return "위험중립형";
+  if (score <= 4) return "적극투자형";
   return "공격투자형";
 }
 
@@ -200,7 +200,7 @@ export async function signupUser({
       nickname:        data.nickname,
       birthdate:       data.birth_date,
       phone:           data.phone,
-      consentRequired: basic.consetRequired,
+      consentRequired: basic.consentRequired,
       riskProfile,
       riskScore:       data.risk_score,
       riskLabel,
@@ -430,4 +430,66 @@ export function getCurrentUser(): AuthUser | null {
   );
 
   return matchedUser ? toAuthUser(matchedUser) : null;
+}
+
+export async function googleLogin(): Promise<void> {
+  const res = await fetch(`${API_BASE}/auth/google/login`);
+  if (!res.ok) throw new Error('Google 로그인을 시작할 수 없습니다.');
+  const redirectUrl = await res.json() as string;
+  window.location.href = redirectUrl;
+}
+
+export async function handleGoogleCallback(
+  params: URLSearchParams,
+): Promise<LoginResult> {
+  const accessToken = params.get('access_token');
+  const refreshToken = params.get('refresh_token');
+
+  if (!accessToken) {
+    return { ok: false, message: 'Google 로그인에 실패했습니다.' };
+  }
+
+  if (canUseStorage()) {
+    window.localStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
+    if (refreshToken) {
+      window.localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
+    }
+  }
+
+  let email = '';
+  let userId = '';
+  try {
+    const payload = JSON.parse(atob(accessToken.split('.')[1]));
+    userId = payload.sub ?? '';
+    email = payload.email ?? payload.sub ?? '';
+  } catch { /* JWT 디코딩 실패 시 빈 값 유지 */ }
+
+  if (!email) {
+    return { ok: false, message: 'Google 로그인에 실패했습니다.' };
+  }
+
+  const normalizedEmail = normalizeEmail(email);
+  writeSession(normalizedEmail);
+
+  const localUser = readUsers().find(
+    (u) => normalizeEmail(u.email) === normalizedEmail,
+  );
+  if (localUser) return { ok: true, user: toAuthUser(localUser) };
+
+  const fallbackUser: AuthUser = {
+    id:              userId || normalizedEmail,
+    name:            normalizedEmail.split('@')[0],
+    email:           normalizedEmail,
+    nickname:        normalizedEmail.split('@')[0],
+    birthdate:       '',
+    phone:           '',
+    consentRequired: false,
+    riskProfile:     { goal: 'PRESERVE', horizon: 'LT3M', lossTolerance: 'LT5', experience: 'NONE', volatility: 'LOW' },
+    riskScore:       5,
+    riskLabel:       '안정형',
+    createdAt:       new Date().toISOString(),
+  };
+
+  writeUsers([...readUsers(), fallbackUser as StoredUser]);
+  return { ok: true, user: fallbackUser };
 }
