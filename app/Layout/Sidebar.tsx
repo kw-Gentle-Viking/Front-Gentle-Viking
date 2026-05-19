@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { usePathname } from "next/navigation";
 import { useSidebar } from "@/components/sidebar/SidebarContext";
 import { LuPanelRightOpen } from "react-icons/lu";
@@ -8,10 +7,26 @@ import { LuPanelLeftOpen } from "react-icons/lu";
 import { GoGraph } from "react-icons/go";
 import { FaHeart } from "react-icons/fa";
 import { IoTime } from "react-icons/io5";
+import { useFavorites } from "@/components/favorites/FavoritesContext";
+import { usePortfolio } from "@/components/portfolio/PortfolioContext";
+import { mockPopularStocks } from "@/lib/dashboard/mock";
+import { mockAccountAssets, mockOrders, mockStockPnl } from "@/lib/mypage/mock";
 
 const Sidebar = () => {
   const pathname = usePathname();
   const { isOpen, activeTab, openSidebar, closeSidebar } = useSidebar();
+  const { isFavorited } = useFavorites();
+  const { inPortfolio } = usePortfolio();
+  const favStocks = mockPopularStocks.filter((s) => isFavorited(s.stockCode));
+
+  const pnlMap = new Map(mockStockPnl.map((s) => [s.stockCode, s]));
+  const allStocks = [
+    ...mockPopularStocks,
+    ...mockStockPnl
+      .filter((s) => !mockPopularStocks.some((p) => p.stockCode === s.stockCode))
+      .map((s) => ({ stockCode: s.stockCode, name: s.stockName, priceKRW: 0, isUp: s.pnlRate >= 0, changePercent: s.pnlRate })),
+  ];
+  const portfolioStocks = allStocks.filter((s) => inPortfolio(s.stockCode));
 
   const isStandalonePage =
     pathname === "/" || pathname === "/login" || pathname === "/signup";
@@ -42,39 +57,133 @@ const Sidebar = () => {
   // 2. 탭별 컨텐츠 렌더링
   const renderTabContent = () => {
     switch (activeTab) {
-      case "portfolio":
+      case "portfolio": {
+        const { investedKRW, investedPnlKRW, investedPnlRate } = mockAccountAssets;
         return (
           <div className="animate-fadeIn">
-            <h2 className="text-lg font-bold mb-4">내 투자 현황</h2>
-            <div className="p-4 bg-gray-50 rounded-xl">
-              자산 요약 정보가 표시됩니다.
-            </div>
-          </div>
-        );
-      case "favorite":
-        return (
-          <div className="animate-fadeIn">
-            <h2 className="text-lg font-bold mb-4">관심 종목 TOP 10</h2>
-            <div className="space-y-2">
-              {/* 예시 리스트 */}
-              <div className="flex justify-between items-center p-3 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors">
-                <span className="font-medium text-sm text-gray-700">
-                  삼성전자
-                </span>
-                <span className="text-red-500 text-sm font-semibold">
-                  +0.61%
+            <h2 className="text-lg font-bold mb-3">내 투자 현황</h2>
+            <div className="p-4 bg-gray-50 rounded-xl mb-4">
+              <p className="text-xs text-gray-400 mb-1">총 투자금액</p>
+              <p className="text-lg font-black text-slate-900">
+                {investedKRW.toLocaleString("ko-KR")}원
+              </p>
+              <div className={`mt-1 flex items-center gap-1 text-sm font-bold ${investedPnlRate >= 0 ? "text-red-500" : "text-blue-500"}`}>
+                <span>{investedPnlRate >= 0 ? "+" : ""}{investedPnlRate.toFixed(2)}%</span>
+                <span className="font-medium text-xs">
+                  ({investedPnlKRW >= 0 ? "+" : ""}{investedPnlKRW.toLocaleString("ko-KR")}원)
                 </span>
               </div>
             </div>
+            {portfolioStocks.length === 0 ? (
+              <p className="text-sm text-gray-400 text-center py-8">
+                AI 리포트에서 종목을 담아보세요.
+              </p>
+            ) : (
+              <div className="space-y-1">
+                {portfolioStocks.map((stock) => {
+                  const pnl = pnlMap.get(stock.stockCode);
+                  return (
+                    <div
+                      key={stock.stockCode}
+                      className="flex justify-between items-center px-3 py-2.5 hover:bg-gray-100 rounded-xl cursor-pointer transition-colors"
+                    >
+                      <div>
+                        <p className="font-semibold text-sm text-gray-800">{stock.name}</p>
+                        <p className="text-[11px] text-gray-400">{stock.stockCode}</p>
+                      </div>
+                      <div className="text-right">
+                        {stock.priceKRW > 0 && (
+                          <p className="text-sm font-semibold text-gray-800">
+                            {stock.priceKRW.toLocaleString("ko-KR")}원
+                          </p>
+                        )}
+                        {pnl ? (
+                          <p className={`text-xs font-bold ${pnl.pnlRate >= 0 ? "text-red-500" : "text-blue-500"}`}>
+                            {pnl.pnlRate >= 0 ? "+" : ""}{pnl.pnlRate.toFixed(1)}%
+                          </p>
+                        ) : (
+                          <p className={`text-xs font-bold ${stock.isUp ? "text-red-500" : "text-blue-500"}`}>
+                            {stock.isUp ? "+" : ""}{stock.changePercent.toFixed(2)}%
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        );
+      }
+      case "favorite":
+        return (
+          <div className="animate-fadeIn">
+            <h2 className="text-lg font-bold mb-4">관심 종목</h2>
+            {favStocks.length === 0 ? (
+              <p className="text-sm text-gray-400 text-center py-8">
+                하트를 눌러 관심 종목을 추가해보세요.
+              </p>
+            ) : (
+              <div className="space-y-1">
+                {favStocks.map((stock) => (
+                  <div
+                    key={stock.stockCode}
+                    className="flex justify-between items-center px-3 py-2.5 hover:bg-gray-100 rounded-xl cursor-pointer transition-colors"
+                  >
+                    <div>
+                      <p className="font-semibold text-sm text-gray-800">{stock.name}</p>
+                      <p className="text-[11px] text-gray-400">{stock.stockCode}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-semibold text-gray-800">
+                        {stock.priceKRW.toLocaleString("ko-KR")}원
+                      </p>
+                      <p className={`text-xs font-bold ${stock.isUp ? "text-red-500" : "text-blue-500"}`}>
+                        {stock.isUp ? "+" : ""}{stock.changePercent.toFixed(2)}%
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         );
       case "history":
         return (
           <div className="animate-fadeIn">
             <h2 className="text-lg font-bold mb-4">최근 거래 내역</h2>
-            <p className="text-sm text-gray-400">
-              최근 7일간 거래 내역이 없습니다.
-            </p>
+            <div className="space-y-1">
+              {mockOrders.map((order) => (
+                <div
+                  key={order.id}
+                  className="px-3 py-2.5 hover:bg-gray-100 rounded-xl transition-colors"
+                >
+                  <div className="flex items-center justify-between mb-0.5">
+                    <div className="flex items-center gap-1.5">
+                      <span className={`text-xs font-bold ${order.type === "매수" ? "text-red-500" : "text-blue-500"}`}>
+                        {order.type}
+                      </span>
+                      <span className="font-semibold text-sm text-gray-800">{order.stockName}</span>
+                    </div>
+                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
+                      order.status === "체결"
+                        ? "bg-green-50 text-green-600"
+                        : order.status === "미체결"
+                          ? "bg-yellow-50 text-yellow-600"
+                          : "bg-gray-100 text-gray-400"
+                    }`}>
+                      {order.status}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-gray-400">{order.datetime.slice(5)}</span>
+                    <span className="text-xs text-gray-500">
+                      {order.orderQty}주 · {order.orderPrice.toLocaleString("ko-KR")}원
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         );
       default:

@@ -21,7 +21,14 @@ function HeartIcon({ filled }: { filled: boolean }) {
       <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
     </svg>
   ) : (
-    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" strokeWidth="2" strokeLinejoin="round">
+    <svg
+      className="w-4 h-4"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="#d1d5db"
+      strokeWidth="2"
+      strokeLinejoin="round"
+    >
       <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
     </svg>
   );
@@ -109,7 +116,7 @@ export default function HomePage() {
                   : "text-gray-400 hover:text-gray-600"
               }`}
             >
-              {tab === "popular" ? "실시간 인기 종목" : "나의 종목"}
+              {tab === "popular" ? "실시간 인기 종목" : "관심 종목"}
               {tab === "mine" && favorites.size > 0 && (
                 <span className="ml-1.5 text-xs font-bold text-red-500">
                   {favorites.size}
@@ -129,7 +136,9 @@ export default function HomePage() {
           <div className="flex-1 ml-4">종목명</div>
           <div className="w-28 text-right shrink-0">현재가</div>
           <div className="w-24 text-right shrink-0">등락률</div>
-          <div className="w-28 text-right shrink-0 hidden sm:block">거래대금</div>
+          <div className="w-28 text-right shrink-0 hidden sm:block">
+            거래대금
+          </div>
         </div>
 
         {/* 종목 리스트 */}
@@ -165,7 +174,9 @@ export default function HomePage() {
                     <p className="font-bold text-sm text-slate-900 truncate">
                       {stock.name}
                     </p>
-                    <p className="text-[11px] text-gray-400">{stock.stockCode}</p>
+                    <p className="text-[11px] text-gray-400">
+                      {stock.stockCode}
+                    </p>
                   </div>
                 </div>
                 <div className="w-28 text-right font-bold text-sm shrink-0">
