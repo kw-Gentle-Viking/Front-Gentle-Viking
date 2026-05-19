@@ -231,18 +231,8 @@ export const mockPopularStocks: StockItem[] = [
     volumeKRW: 1500000000,
   },
   {
-    id: 21,
-    rank: 21,
-    name: "주성엔지니어링",
-    stockCode: "036930",
-    priceKRW: 175100,
-    changePercent: -3.89,
-    isUp: false,
-    volumeKRW: 1400000000,
-  },
-  {
     id: 22,
-    rank: 22,
+    rank: 21,
     name: "스피어",
     stockCode: "427950",
     priceKRW: 43250,
@@ -252,7 +242,7 @@ export const mockPopularStocks: StockItem[] = [
   },
   {
     id: 23,
-    rank: 23,
+    rank: 22,
     name: "켄코아에어로스페이스",
     stockCode: "274400",
     priceKRW: 27750,
@@ -262,7 +252,7 @@ export const mockPopularStocks: StockItem[] = [
   },
   {
     id: 24,
-    rank: 24,
+    rank: 23,
     name: "한화오션",
     stockCode: "042660",
     priceKRW: 112300,
@@ -272,7 +262,7 @@ export const mockPopularStocks: StockItem[] = [
   },
   {
     id: 25,
-    rank: 25,
+    rank: 24,
     name: "폴라리스AI",
     stockCode: "440160",
     priceKRW: 8690,
@@ -282,7 +272,7 @@ export const mockPopularStocks: StockItem[] = [
   },
   {
     id: 26,
-    rank: 26,
+    rank: 25,
     name: "삼성전자우",
     stockCode: "005935",
     priceKRW: 180400,
@@ -292,7 +282,7 @@ export const mockPopularStocks: StockItem[] = [
   },
   {
     id: 27,
-    rank: 27,
+    rank: 26,
     name: "오가닉티코스메틱",
     stockCode: "100120",
     priceKRW: 125,
@@ -302,7 +292,7 @@ export const mockPopularStocks: StockItem[] = [
   },
   {
     id: 28,
-    rank: 28,
+    rank: 27,
     name: "LG이노텍",
     stockCode: "011070",
     priceKRW: 802000,
@@ -312,7 +302,7 @@ export const mockPopularStocks: StockItem[] = [
   },
   {
     id: 29,
-    rank: 29,
+    rank: 28,
     name: "파두",
     stockCode: "450140",
     priceKRW: 107100,
@@ -322,7 +312,7 @@ export const mockPopularStocks: StockItem[] = [
   },
   {
     id: 30,
-    rank: 30,
+    rank: 29,
     name: "아이로보틱스",
     stockCode: "430690",
     priceKRW: 4230,
