@@ -17,7 +17,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko">
-      <body className="bg-white text-[#333D4B] overflow-x-hidden">
+      <body className="bg-gray-50/40 text-[#333D4B] overflow-x-hidden">
         <SidebarProvider>
           <div className="min-h-screen flex flex-col relative">
             <Header />
