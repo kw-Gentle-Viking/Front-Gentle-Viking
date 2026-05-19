@@ -1,50 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { mockMonthly, mockStockPnl, mockDividends } from "@/lib/mypage/mock";
 
 type ViewTab = "전체" | "월별";
-
-type MonthlyProfit = {
-  month: string;
-  saleKRW: number;
-  dividendKRW: number;
-  interestKRW: number;
-};
-
-type StockPnl = {
-  stockName: string;
-  stockCode: string;
-  pnlKRW: number;
-  pnlRate: number;
-};
-
-type DividendItem = {
-  stockName: string;
-  stockCode: string;
-  paidAt: string;
-  amountKRW: number;
-};
-
-const mockMonthly: MonthlyProfit[] = [
-  { month: "2026-01", saleKRW: 0,     dividendKRW: 0,    interestKRW: 0 },
-  { month: "2026-02", saleKRW: 12400, dividendKRW: 0,    interestKRW: 120 },
-  { month: "2026-03", saleKRW: 0,     dividendKRW: 2977, interestKRW: 0 },
-  { month: "2026-04", saleKRW: -8600, dividendKRW: 0,    interestKRW: 85 },
-  { month: "2026-05", saleKRW: 9200,  dividendKRW: 0,    interestKRW: 0 },
-];
-
-const mockDividends: DividendItem[] = [
-  { stockName: "삼성전자",   stockCode: "005930", paidAt: "2026-03-18", amountKRW: 1820 },
-  { stockName: "SK하이닉스", stockCode: "000660", paidAt: "2026-03-20", amountKRW: 757 },
-  { stockName: "현대차",     stockCode: "005380", paidAt: "2026-02-14", amountKRW: 400 },
-];
-
-const mockStockPnl: StockPnl[] = [
-  { stockName: "SK하이닉스", stockCode: "000660", pnlKRW: 6800,  pnlRate: 5.0 },
-  { stockName: "삼성전자",   stockCode: "005930", pnlKRW: 2800,  pnlRate: 1.9 },
-  { stockName: "현대차",     stockCode: "005380", pnlKRW: -1200, pnlRate: -0.6 },
-  { stockName: "카카오",     stockCode: "035720", pnlKRW: -2400, pnlRate: -2.9 },
-];
 
 const totalSale     = mockMonthly.reduce((s, m) => s + m.saleKRW, 0);
 const totalDividend = mockMonthly.reduce((s, m) => s + m.dividendKRW, 0);

@@ -1,47 +1,6 @@
 "use client";
 
-type StockHolding = {
-  flag: string;
-  label: string;
-  valueKRW: number;
-  pnlKRW: number;
-  pnlRate: number;
-};
-
-type MonthlyReturn = {
-  totalKRW: number;
-  saleKRW: number;
-  dividendKRW: number;
-  interestKRW: number;
-};
-
-type AccountAssets = {
-  broker: string;
-  accountNo: string;
-  totalKRW: number;
-  orderableKRW: number;
-  cashKRW: number;
-  investedKRW: number;
-  investedPnlKRW: number;
-  investedPnlRate: number;
-  holdings: StockHolding[];
-  monthly: MonthlyReturn;
-};
-
-const mockAccountAssets: AccountAssets = {
-  broker: "한국투자증권",
-  accountNo: "001-012-123123",
-  totalKRW: 1397380,
-  orderableKRW: 86539,
-  cashKRW: 38,
-  investedKRW: 1310797,
-  investedPnlKRW: -22028,
-  investedPnlRate: -1.65,
-  holdings: [
-    { flag: "🇰🇷", label: "국내주식", valueKRW: 30700, pnlKRW: -400, pnlRate: -1.28 },
-  ],
-  monthly: { totalKRW: 2977, saleKRW: 0, dividendKRW: 2977, interestKRW: 0 },
-};
+import { mockAccountAssets } from "@/lib/mypage/mock";
 
 function fmt(v: number) {
   return v.toLocaleString("ko-KR");

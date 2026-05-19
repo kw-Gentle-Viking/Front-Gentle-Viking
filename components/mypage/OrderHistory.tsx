@@ -1,32 +1,8 @@
 "use client";
 
 import { useState } from "react";
-
-type OrderStatus = "체결" | "취소" | "미체결";
-type OrderType = "매수" | "매도";
-
-type Order = {
-  id: string;
-  datetime: string;
-  stockName: string;
-  stockCode: string;
-  type: OrderType;
-  orderQty: number;
-  orderPrice: number;
-  filledQty: number;
-  filledPrice: number;
-  status: OrderStatus;
-};
-
-const mockOrders: Order[] = [
-  { id: "o1", datetime: "2026-05-19 09:05", stockName: "삼성전자",      stockCode: "005930", type: "매수", orderQty: 10, orderPrice: 74000,  filledQty: 10, filledPrice: 73800,  status: "체결" },
-  { id: "o2", datetime: "2026-05-19 09:32", stockName: "SK하이닉스",    stockCode: "000660", type: "매도", orderQty: 5,  orderPrice: 143000, filledQty: 5,  filledPrice: 143200, status: "체결" },
-  { id: "o3", datetime: "2026-05-18 14:11", stockName: "카카오",        stockCode: "035720", type: "매수", orderQty: 3,  orderPrice: 41000,  filledQty: 0,  filledPrice: 0,      status: "취소" },
-  { id: "o4", datetime: "2026-05-18 10:47", stockName: "네이버",        stockCode: "035420", type: "매수", orderQty: 2,  orderPrice: 57000,  filledQty: 2,  filledPrice: 56900,  status: "체결" },
-  { id: "o5", datetime: "2026-05-17 11:20", stockName: "현대차",        stockCode: "005380", type: "매도", orderQty: 4,  orderPrice: 215000, filledQty: 4,  filledPrice: 215500, status: "체결" },
-  { id: "o6", datetime: "2026-05-16 09:58", stockName: "LG에너지솔루션", stockCode: "373220", type: "매수", orderQty: 1,  orderPrice: 380000, filledQty: 0,  filledPrice: 0,      status: "미체결" },
-  { id: "o7", datetime: "2026-05-15 15:03", stockName: "삼성전자",      stockCode: "005930", type: "매도", orderQty: 5,  orderPrice: 75000,  filledQty: 5,  filledPrice: 74900,  status: "체결" },
-];
+import { mockOrders } from "@/lib/mypage/mock";
+import type { OrderStatus, OrderType } from "@/lib/mypage/types";
 
 const STATUS_STYLE: Record<OrderStatus, string> = {
   체결:   "bg-emerald-50 text-emerald-600",
