@@ -11,7 +11,7 @@ import {
   AuthUser,
   getCurrentUser,
   logoutUser,
-} from "@/lib/auth";
+} from "@/lib/signup/auth";
 
 export default function Header() {
   const pathname = usePathname();
