@@ -7,21 +7,18 @@ type SidebarTab = "portfolio" | "favorite" | "history" | "close";
 interface SidebarContextType {
   isOpen: boolean;
   activeTab: SidebarTab;
-  openSidebar: (tab: SidebarTab) => void;
+  openSidebar: (tab?: SidebarTab) => void;
   closeSidebar: () => void;
+  toggleSidebar: () => void;
 }
 
 const SidebarContext = createContext<SidebarContextType | undefined>(undefined);
 
-export const SidebarProvider = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
-  const [isOpen, setIsOpen] = useState(false);
+export const SidebarProvider = ({ children }: { children: React.ReactNode }) => {
+  const [isOpen, setIsOpen] = useState(true);
   const [activeTab, setActiveTab] = useState<SidebarTab>("portfolio");
 
-  const openSidebar = (tab: SidebarTab) => {
+  const openSidebar = (tab: SidebarTab = activeTab) => {
     if (tab === "close") {
       closeSidebar();
       return;
@@ -34,10 +31,12 @@ export const SidebarProvider = ({
     setIsOpen(false);
   };
 
+  const toggleSidebar = () => {
+    setIsOpen((current) => !current);
+  };
+
   return (
-    <SidebarContext.Provider
-      value={{ isOpen, activeTab, openSidebar, closeSidebar }}
-    >
+    <SidebarContext.Provider value={{ isOpen, activeTab, openSidebar, closeSidebar, toggleSidebar }}>
       {children}
     </SidebarContext.Provider>
   );

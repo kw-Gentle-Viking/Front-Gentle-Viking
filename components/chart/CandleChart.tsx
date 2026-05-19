@@ -13,9 +13,11 @@ import { CandleType } from '@/lib/chart/types';
 
 type Props = {
   data: CandleType[];
+  height?: number;
+  className?: string;
 };
 
-export default function CandleChart({ data }: Props) {
+export default function CandleChart({ data, height = 420, className }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const seriesRef = useRef<ISeriesApi<'Candlestick'> | null>(null);
@@ -34,7 +36,7 @@ export default function CandleChart({ data }: Props) {
     if (!containerRef.current) return;
 
     const chart = createChart(containerRef.current, {
-      height: 420,
+      height,
       width: containerRef.current.clientWidth,
       crosshair: { mode: CrosshairMode.Normal },
       layout: {
@@ -85,7 +87,7 @@ export default function CandleChart({ data }: Props) {
       chartRef.current = null;
       seriesRef.current = null;
     };
-  }, []);
+  }, [height]);
 
   useEffect(() => {
     if (!seriesRef.current) return;
@@ -94,7 +96,7 @@ export default function CandleChart({ data }: Props) {
   }, [chartData]);
 
   return (
-    <div className="w-full rounded-2xl border border-slate-200/70 bg-white p-3 shadow-sm">
+    <div className={className ?? "w-full rounded-2xl border border-slate-200/70 bg-white p-3 shadow-sm"}>
       <div ref={containerRef} className="w-full" />
     </div>
   );

@@ -87,7 +87,7 @@ const Login = () => {
               로그인
             </h1>
             <p className="mt-3 text-xs font-black uppercase tracking-[0.18em] text-indigo-500">
-              Welcome back
+              Welcome back !
             </p>
             <p className="mt-2 text-sm leading-6 text-slate-500">
               데모 계정은 test@gentleviking.com / 1234 입니다.

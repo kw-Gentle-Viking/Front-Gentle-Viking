@@ -34,6 +34,30 @@
   animation: slideUpFade 0.6s ease-out forwards;
 }
 
+@keyframes pageSwoop {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.992);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+.page-swoop {
+  animation: pageSwoop 0.36s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, opacity, filter;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-swoop {
+    animation: none;
+  }
+}
+
 @keyframes logoMarquee {
   from {
     transform: translateX(0);
@@ -255,6 +279,27 @@
     scale: 0.22;
     translate: var(--suck-x) var(--suck-y);
     filter: blur(5px);
+  }
+}
+
+@keyframes loadingSlide {
+  0% {
+    transform: translateX(-110%);
+  }
+  50% {
+    transform: translateX(60%);
+  }
+  100% {
+    transform: translateX(220%);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
   }
 }
 

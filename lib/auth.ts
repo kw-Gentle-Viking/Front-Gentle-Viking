@@ -116,7 +116,10 @@ function readUsers(): StoredUser[] {
 
 function writeUsers(users: StoredUser[]) {
   if (!canUseStorage()) return;
-  const sanitized = users.map(({ password: _pw, ...rest }) => rest);
+  const sanitized = users.map(({ password: _pw, ...rest }) => {
+    void _pw;
+    return rest;
+  });
   window.localStorage.setItem(USERS_KEY, JSON.stringify(sanitized));
 }
 

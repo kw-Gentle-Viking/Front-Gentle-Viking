@@ -89,10 +89,10 @@ export default function Assets() {
             {fmt(a.totalKRW)}원
           </span>
           <div className="flex gap-2">
-            <button className="rounded-md border border-slate-200 px-4 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50">
+            <button className="rounded-full border border-gray-200 bg-white px-4 py-1.5 text-sm font-semibold text-slate-700 shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition hover:bg-gray-50">
               채우기
             </button>
-            <button className="rounded-md border border-slate-200 px-4 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50">
+            <button className="rounded-full border border-gray-200 bg-white px-4 py-1.5 text-sm font-semibold text-slate-700 shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition hover:bg-gray-50">
               보내기
             </button>
           </div>
@@ -100,18 +100,15 @@ export default function Assets() {
       </div>
 
       {/* 자산 상세 */}
-      <div className="space-y-0 divide-y divide-slate-100 rounded-xl border border-slate-200 bg-white">
-        {/* 총 주문 가능 금액 */}
-        <div className="flex items-center justify-between px-5 py-3.5">
-          <span className="text-sm text-slate-600">총 주문 가능 금액</span>
-          <span className="text-sm font-medium text-slate-900">
-            {fmt(a.orderableKRW)}원
-          </span>
+      <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
+        <div className="flex items-center justify-between border-b border-gray-50 px-5 py-4">
+          <span className="text-sm text-gray-500">총 주문 가능 금액</span>
+          <span className="text-sm font-bold text-slate-900">{fmt(a.orderableKRW)}원</span>
         </div>
 
         {/* 원화 */}
-        <div className="flex items-center justify-between px-5 py-3.5 pl-10">
-          <span className="flex items-center gap-1.5 text-sm text-slate-500">
+        <div className="flex items-center justify-between border-b border-gray-50 px-5 py-4 pl-10">
+          <span className="flex items-center gap-1.5 text-sm text-gray-400">
             <span className="flex h-4 w-4 items-center justify-center rounded-full bg-blue-500 text-[9px] font-bold text-white">
               ₩
             </span>
@@ -121,26 +118,21 @@ export default function Assets() {
         </div>
 
         {/* 총 투자 금액 */}
-        <div className="flex items-center justify-between px-5 py-3.5">
+        <div className="flex items-center justify-between border-b border-gray-50 px-5 py-4">
           <div>
-            <p className="text-sm text-slate-600">총 투자 금액</p>
-            <p className="text-xs text-slate-400">순간 종목 제외</p>
+            <p className="text-sm text-gray-500">총 투자 금액</p>
+            <p className="text-xs text-gray-400">순간 종목 제외</p>
           </div>
           <div className="text-right">
-            <p className="text-sm font-medium text-slate-900">
-              {fmt(a.investedKRW)}원
-            </p>
+            <p className="text-sm font-bold text-slate-900">{fmt(a.investedKRW)}원</p>
             <PnlText value={a.investedPnlKRW} rate={a.investedPnlRate} />
           </div>
         </div>
 
         {/* 종목별 보유 */}
         {a.holdings.map((h) => (
-          <div
-            key={h.label}
-            className="flex items-center justify-between px-5 py-3.5 pl-10"
-          >
-            <span className="flex items-center gap-1.5 text-sm text-slate-500">
+          <div key={h.label} className="flex items-center justify-between border-b border-gray-50 px-5 py-4 pl-10 last:border-none">
+            <span className="flex items-center gap-1.5 text-sm text-gray-400">
               <span>{h.flag}</span>
               {h.label}
             </span>
@@ -153,39 +145,26 @@ export default function Assets() {
       </div>
 
       {/* 월별 수익 */}
-      <div className="space-y-0 divide-y divide-slate-100 rounded-xl border border-slate-200 bg-white">
-        {/* 월 수익 헤더 */}
-        <div className="flex items-center justify-between px-5 py-3.5">
-          <span className="text-sm text-slate-600">{currentMonth}월 수익</span>
-          <span
-            className={`text-sm font-semibold ${monthlyIsPos ? "text-rose-500" : "text-blue-500"}`}
-          >
-            {monthlyIsPos ? "+" : ""}
-            {fmt(a.monthly.totalKRW)}원
+      <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-[0_2px_10px_rgba(0,0,0,0.02)]">
+        <div className="flex items-center justify-between border-b border-gray-50 px-5 py-4">
+          <span className="text-sm font-bold text-slate-900">{currentMonth}월 수익</span>
+          <span className={`text-sm font-bold ${monthlyIsPos ? "text-red-500" : "text-blue-500"}`}>
+            {monthlyIsPos ? "+" : ""}{fmt(a.monthly.totalKRW)}원
           </span>
         </div>
 
-        <div className="flex items-center justify-between px-5 py-3.5">
-          <span className="text-sm text-slate-600">판매수익</span>
-          <span className="text-sm text-slate-700">
-            {fmt(a.monthly.saleKRW)}원
-          </span>
-        </div>
-
-        <div className="flex items-center justify-between px-5 py-3.5">
-          <span className="text-sm text-slate-600">배당금</span>
-          <span className="text-sm text-slate-700">
-            {a.monthly.dividendKRW > 0 ? "+" : ""}
-            {fmt(a.monthly.dividendKRW)}원
-          </span>
-        </div>
-
-        <div className="flex items-center justify-between px-5 py-3.5">
-          <span className="text-sm text-slate-600">이자</span>
-          <span className="text-sm text-slate-700">
-            {fmt(a.monthly.interestKRW)}원
-          </span>
-        </div>
+        {[
+          { label: "판매수익", value: a.monthly.saleKRW },
+          { label: "배당금", value: a.monthly.dividendKRW },
+          { label: "이자", value: a.monthly.interestKRW },
+        ].map(({ label, value }) => (
+          <div key={label} className="flex items-center justify-between border-b border-gray-50 px-5 py-3.5 last:border-none">
+            <span className="text-sm text-gray-500">{label}</span>
+            <span className="text-sm text-slate-700">
+              {value > 0 ? "+" : ""}{fmt(value)}원
+            </span>
+          </div>
+        ))}
       </div>
     </div>
   );
