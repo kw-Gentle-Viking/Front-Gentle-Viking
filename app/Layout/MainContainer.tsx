@@ -23,7 +23,7 @@ export default function MainContainer({
 
   return (
     <main
-      className="flex-1 bg-white transition-all duration-300 ease-in-out"
+      className="flex-1 bg-gray-50/40 transition-all duration-300 ease-in-out"
       style={{ paddingRight: sidebarWidth }}
     >
       <div className="mx-auto max-w-[1280px] px-6">{children}</div>
