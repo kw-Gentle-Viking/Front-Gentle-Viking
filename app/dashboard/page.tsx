@@ -1,11 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
-import {
-  mockMarketIndices,
-  mockPopularStocks,
-  mockMyStocks,
-} from "@/lib/dashboard/mock";
+import { useState } from "react";
+import { mockMarketIndices, mockPopularStocks } from "@/lib/dashboard/mock";
+import StockChartPanel from "@/components/dashboard/StockChartPanel";
 
 function fmtPrice(v: number) {
   return v.toLocaleString("ko-KR");
@@ -17,11 +14,49 @@ function fmtVolume(v: number) {
   return `${v}원`;
 }
 
+function HeartIcon({ filled }: { filled: boolean }) {
+  return filled ? (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="#ef4444">
+      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+    </svg>
+  ) : (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" strokeWidth="2" strokeLinejoin="round">
+      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+    </svg>
+  );
+}
+
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState<"popular" | "mine">("popular");
+  const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [favorites, setFavorites] = useState<Set<string>>(
+    () => new Set(["005930", "000660"]),
+  );
 
-  const currentList =
-    activeTab === "popular" ? mockPopularStocks : mockMyStocks;
+  const myStocks = mockPopularStocks
+    .filter((s) => favorites.has(s.stockCode))
+    .map((s) => ({ ...s, rank: "-" as const }));
+
+  const currentList = activeTab === "popular" ? mockPopularStocks : myStocks;
+
+  function handleTabChange(tab: "popular" | "mine") {
+    setActiveTab(tab);
+    setSelectedId(null);
+  }
+
+  function handleRowClick(id: number) {
+    setSelectedId((prev) => (prev === id ? null : id));
+  }
+
+  function toggleFavorite(e: React.MouseEvent, stockCode: string) {
+    e.stopPropagation();
+    setFavorites((prev) => {
+      const next = new Set(prev);
+      if (next.has(stockCode)) next.delete(stockCode);
+      else next.add(stockCode);
+      return next;
+    });
+  }
 
   return (
     <div className="flex flex-col gap-8 pt-4 pb-10">
@@ -73,7 +108,7 @@ export default function HomePage() {
           {(["popular", "mine"] as const).map((tab) => (
             <button
               key={tab}
-              onClick={() => setActiveTab(tab)}
+              onClick={() => handleTabChange(tab)}
               className={`py-4 text-base font-bold transition-colors relative ${
                 activeTab === tab
                   ? "text-black"
@@ -81,6 +116,11 @@ export default function HomePage() {
               }`}
             >
               {tab === "popular" ? "실시간 인기 종목" : "나의 종목"}
+              {tab === "mine" && favorites.size > 0 && (
+                <span className="ml-1.5 text-xs font-bold text-red-500">
+                  {favorites.size}
+                </span>
+              )}
               {activeTab === tab && (
                 <div className="absolute bottom-0 left-0 w-full h-[2px] bg-black" />
               )}
@@ -90,51 +130,80 @@ export default function HomePage() {
 
         {/* 테이블 헤더 */}
         <div className="flex items-center px-6 py-3 bg-gray-50/50 text-xs text-gray-500 font-medium">
-          <div className="w-10 text-center">순위</div>
+          <div className="w-8 shrink-0" />
+          <div className="w-10 text-center shrink-0">순위</div>
           <div className="flex-1 ml-4">종목명</div>
-          <div className="w-28 text-right">현재가</div>
-          <div className="w-24 text-right">등락률</div>
-          <div className="w-28 text-right hidden sm:block">거래대금</div>
+          <div className="w-28 text-right shrink-0">현재가</div>
+          <div className="w-24 text-right shrink-0">등락률</div>
+          <div className="w-28 text-right shrink-0 hidden sm:block">거래대금</div>
         </div>
 
         {/* 종목 리스트 */}
         <div className="flex flex-col">
           {currentList.map((stock) => (
             <div
-              key={stock.id}
-              className="flex items-center px-6 py-4 hover:bg-gray-50 transition-colors cursor-pointer border-b border-gray-50 last:border-none"
+              key={stock.stockCode}
+              className="border-b border-gray-50 last:border-none"
             >
-              <div className="w-10 text-center font-semibold text-gray-400">
-                {stock.rank}
-              </div>
-              <div className="flex-1 flex items-center gap-3 ml-4">
-                <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-bold text-slate-500">
-                  {stock.name.substring(0, 1)}
-                </div>
-                <div>
-                  <p className="font-bold text-sm text-slate-900">
-                    {stock.name}
-                  </p>
-                  <p className="text-[11px] text-gray-400">{stock.stockCode}</p>
-                </div>
-              </div>
-              <div className="w-28 text-right font-bold text-sm">
-                {fmtPrice(stock.priceKRW)}원
-              </div>
+              {/* 종목 행 */}
               <div
-                className={`w-24 text-right font-bold text-sm ${stock.isUp ? "text-red-500" : "text-blue-500"}`}
+                onClick={() => handleRowClick(stock.id)}
+                className={`flex items-center px-6 py-4 transition-colors cursor-pointer ${
+                  selectedId === stock.id ? "bg-gray-50" : "hover:bg-gray-50"
+                }`}
               >
-                {stock.isUp ? "+" : ""}
-                {stock.changePercent.toFixed(2)}%
+                {/* 하트 즐겨찾기 */}
+                <button
+                  onClick={(e) => toggleFavorite(e, stock.stockCode)}
+                  className="w-8 shrink-0 flex justify-center items-center hover:scale-110 transition-transform"
+                >
+                  <HeartIcon filled={favorites.has(stock.stockCode)} />
+                </button>
+
+                <div className="w-10 text-center font-semibold text-gray-400 shrink-0">
+                  {stock.rank}
+                </div>
+                <div className="flex-1 flex items-center gap-3 ml-4 min-w-0">
+                  <div className="w-8 h-8 shrink-0 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-bold text-slate-500">
+                    {stock.name.substring(0, 1)}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="font-bold text-sm text-slate-900 truncate">
+                      {stock.name}
+                    </p>
+                    <p className="text-[11px] text-gray-400">{stock.stockCode}</p>
+                  </div>
+                </div>
+                <div className="w-28 text-right font-bold text-sm shrink-0">
+                  {fmtPrice(stock.priceKRW)}원
+                </div>
+                <div
+                  className={`w-24 text-right font-bold text-sm shrink-0 ${stock.isUp ? "text-red-500" : "text-blue-500"}`}
+                >
+                  {stock.isUp ? "+" : ""}
+                  {stock.changePercent.toFixed(2)}%
+                </div>
+                <div className="w-28 text-right text-sm text-gray-400 font-medium shrink-0 hidden sm:block">
+                  {fmtVolume(stock.volumeKRW)}
+                </div>
               </div>
-              <div className="w-28 text-right text-sm text-gray-400 font-medium hidden sm:block">
-                {fmtVolume(stock.volumeKRW)}
-              </div>
+
+              {/* 인라인 캔들차트 */}
+              {selectedId === stock.id && (
+                <div className="px-6 py-4 border-t border-gray-100 bg-white">
+                  <StockChartPanel
+                    stockId={stock.id}
+                    currentPrice={stock.priceKRW}
+                  />
+                </div>
+              )}
             </div>
           ))}
           {currentList.length === 0 && (
             <div className="py-20 text-center text-gray-400 text-sm">
-              등록된 종목이 없습니다.
+              {activeTab === "mine"
+                ? "하트를 눌러 관심 종목을 추가해보세요."
+                : "등록된 종목이 없습니다."}
             </div>
           )}
         </div>
