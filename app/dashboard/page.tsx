@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { mockMarketIndices, mockPopularStocks } from "@/lib/dashboard/mock";
 import StockChartPanel from "@/components/dashboard/StockChartPanel";
+import { useFavorites } from "@/components/favorites/FavoritesContext";
 
 function fmtPrice(v: number) {
   return v.toLocaleString("ko-KR");
@@ -29,12 +30,10 @@ function HeartIcon({ filled }: { filled: boolean }) {
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState<"popular" | "mine">("popular");
   const [selectedId, setSelectedId] = useState<number | null>(null);
-  const [favorites, setFavorites] = useState<Set<string>>(
-    () => new Set(["005930", "000660"]),
-  );
+  const { favorites, toggleFavorite: ctxToggle, isFavorited } = useFavorites();
 
   const myStocks = mockPopularStocks
-    .filter((s) => favorites.has(s.stockCode))
+    .filter((s) => isFavorited(s.stockCode))
     .map((s) => ({ ...s, rank: "-" as const }));
 
   const currentList = activeTab === "popular" ? mockPopularStocks : myStocks;
@@ -50,12 +49,7 @@ export default function HomePage() {
 
   function toggleFavorite(e: React.MouseEvent, stockCode: string) {
     e.stopPropagation();
-    setFavorites((prev) => {
-      const next = new Set(prev);
-      if (next.has(stockCode)) next.delete(stockCode);
-      else next.add(stockCode);
-      return next;
-    });
+    ctxToggle(stockCode);
   }
 
   return (

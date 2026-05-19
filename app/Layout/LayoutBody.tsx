@@ -3,6 +3,7 @@
 import { usePathname } from 'next/navigation';
 import Sidebar from './Sidebar';
 import MainContainer from './MainContainer';
+import { FavoritesProvider } from '@/components/favorites/FavoritesContext';
 
 const AUTH_ROUTES = ['/login', '/signup'];
 
@@ -15,9 +16,9 @@ export default function LayoutBody({ children }: { children: React.ReactNode }) 
   }
 
   return (
-    <>
+    <FavoritesProvider>
       <Sidebar />
       <MainContainer>{children}</MainContainer>
-    </>
+    </FavoritesProvider>
   );
 }
