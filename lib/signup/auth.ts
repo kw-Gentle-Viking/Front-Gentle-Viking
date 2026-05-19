@@ -135,11 +135,11 @@ export function isEmailRegistered(email: string) {
 }
 
 const RISK_INT_MAP = {
-  goal:          { PRESERVE: 1, STABLE: 2, GROWTH: 3, AGGRESSIVE: 4 },
-  horizon:       { LT3M: 1, M3TO12: 2, Y1TO3: 3, GT3Y: 4 },
+  goal: { PRESERVE: 1, STABLE: 2, GROWTH: 3, AGGRESSIVE: 4 },
+  horizon: { LT3M: 1, M3TO12: 2, Y1TO3: 3, GT3Y: 4 },
   lossTolerance: { LT5: 1, LT10: 2, LT20: 3, GT30: 4 },
-  experience:    { NONE: 1, SAVING: 2, STOCK_ETF: 3, DERIV_CRYPTO: 4 },
-  volatility:    { LOW: 1, MID: 2, HIGH: 3 },
+  experience: { NONE: 1, SAVING: 2, STOCK_ETF: 3, DERIV_CRYPTO: 4 },
+  volatility: { LOW: 1, MID: 2, HIGH: 3 },
 } as const;
 
 function riskScoreToLabel(score: number): string {
@@ -166,22 +166,26 @@ export async function signupUser({
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        name:                  basic.name.trim(),
-        nickname:              basic.nickname.trim(),
+        name: basic.name.trim(),
+        nickname: basic.nickname.trim(),
         email,
-        phone:                 basic.phone.replace(/\D/g, ""),
-        password:              basic.pw1,
-        birth_date:            basic.birthdate,
-        investment_goal:       RISK_INT_MAP.goal[riskProfile.goal],
-        investment_period:     RISK_INT_MAP.horizon[riskProfile.horizon],
-        risk_tolerance:        RISK_INT_MAP.lossTolerance[riskProfile.lossTolerance],
+        phone: basic.phone.replace(/\D/g, ""),
+        password: basic.pw1,
+        birth_date: basic.birthdate,
+        investment_goal: RISK_INT_MAP.goal[riskProfile.goal],
+        investment_period: RISK_INT_MAP.horizon[riskProfile.horizon],
+        risk_tolerance: RISK_INT_MAP.lossTolerance[riskProfile.lossTolerance],
         investment_experience: RISK_INT_MAP.experience[riskProfile.experience],
         volatility_preference: RISK_INT_MAP.volatility[riskProfile.volatility],
       }),
     });
 
     if (res.status === 409) {
-      return { ok: false, message: "이미 가입된 이메일입니다. 로그인하거나 다른 이메일을 사용해주세요." };
+      return {
+        ok: false,
+        message:
+          "이미 가입된 이메일입니다. 로그인하거나 다른 이메일을 사용해주세요.",
+      };
     }
     if (res.status === 422) {
       return { ok: false, message: "입력값을 확인해주세요." };
@@ -190,21 +194,21 @@ export async function signupUser({
       return { ok: false, message: "회원가입 중 오류가 발생했습니다." };
     }
 
-    const data = await res.json() as SignupApiResponse;
+    const data = (await res.json()) as SignupApiResponse;
     const riskLabel = riskScoreToLabel(data.risk_score);
 
     const user: StoredUser = {
-      id:              String(data.id),
-      name:            data.name,
-      email:           normalizeEmail(data.email),
-      nickname:        data.nickname,
-      birthdate:       data.birth_date,
-      phone:           data.phone,
+      id: String(data.id),
+      name: data.name,
+      email: normalizeEmail(data.email),
+      nickname: data.nickname,
+      birthdate: data.birth_date,
+      phone: data.phone,
       consentRequired: basic.consentRequired,
       riskProfile,
-      riskScore:       data.risk_score,
+      riskScore: data.risk_score,
       riskLabel,
-      createdAt:       data.created_at,
+      createdAt: data.created_at,
     };
 
     writeUsers([...readUsers(), user]);
@@ -212,7 +216,10 @@ export async function signupUser({
 
     return { ok: true, user: toAuthUser(user) };
   } catch {
-    return { ok: false, message: "서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요." };
+    return {
+      ok: false,
+      message: "서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요.",
+    };
   }
 }
 
@@ -432,6 +439,15 @@ export function getCurrentUser(): AuthUser | null {
   return matchedUser ? toAuthUser(matchedUser) : null;
 }
 
+export function ensureDemoSession(): void {
+  if (!canUseStorage()) return;
+  const sessionEmail = window.localStorage.getItem(SESSION_KEY);
+  if (!sessionEmail) {
+    readUsers(); // demo user를 gv-users에 보장
+    writeSession(DEMO_USER.email);
+  }
+}
+
 export function googleLogin(): void {
   window.location.href = `${API_BASE}/auth/google/login`;
 }
@@ -439,11 +455,11 @@ export function googleLogin(): void {
 export async function handleGoogleCallback(
   params: URLSearchParams,
 ): Promise<LoginResult> {
-  const accessToken = params.get('access_token');
-  const refreshToken = params.get('refresh_token');
+  const accessToken = params.get("access_token");
+  const refreshToken = params.get("refresh_token");
 
   if (!accessToken) {
-    return { ok: false, message: 'Google 로그인에 실패했습니다.' };
+    return { ok: false, message: "Google 로그인에 실패했습니다." };
   }
 
   if (canUseStorage()) {
@@ -453,16 +469,18 @@ export async function handleGoogleCallback(
     }
   }
 
-  let email = '';
-  let userId = '';
+  let email = "";
+  let userId = "";
   try {
-    const payload = JSON.parse(atob(accessToken.split('.')[1]));
-    userId = payload.sub ?? '';
-    email = payload.email ?? payload.sub ?? '';
-  } catch { /* JWT 디코딩 실패 시 빈 값 유지 */ }
+    const payload = JSON.parse(atob(accessToken.split(".")[1]));
+    userId = payload.sub ?? "";
+    email = payload.email ?? payload.sub ?? "";
+  } catch {
+    /* JWT 디코딩 실패 시 빈 값 유지 */
+  }
 
   if (!email) {
-    return { ok: false, message: 'Google 로그인에 실패했습니다.' };
+    return { ok: false, message: "Google 로그인에 실패했습니다." };
   }
 
   const normalizedEmail = normalizeEmail(email);
@@ -474,17 +492,23 @@ export async function handleGoogleCallback(
   if (localUser) return { ok: true, user: toAuthUser(localUser) };
 
   const fallbackUser: AuthUser = {
-    id:              userId || normalizedEmail,
-    name:            normalizedEmail.split('@')[0],
-    email:           normalizedEmail,
-    nickname:        normalizedEmail.split('@')[0],
-    birthdate:       '',
-    phone:           '',
+    id: userId || normalizedEmail,
+    name: normalizedEmail.split("@")[0],
+    email: normalizedEmail,
+    nickname: normalizedEmail.split("@")[0],
+    birthdate: "",
+    phone: "",
     consentRequired: false,
-    riskProfile:     { goal: 'PRESERVE', horizon: 'LT3M', lossTolerance: 'LT5', experience: 'NONE', volatility: 'LOW' },
-    riskScore:       5,
-    riskLabel:       '안정형',
-    createdAt:       new Date().toISOString(),
+    riskProfile: {
+      goal: "PRESERVE",
+      horizon: "LT3M",
+      lossTolerance: "LT5",
+      experience: "NONE",
+      volatility: "LOW",
+    },
+    riskScore: 5,
+    riskLabel: "안정형",
+    createdAt: new Date().toISOString(),
   };
 
   writeUsers([...readUsers(), fallbackUser as StoredUser]);
