@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   mockGeneratedAt,
   mockReports,
@@ -61,8 +62,10 @@ type PortfolioModal = {
 } | null;
 
 export default function AIReportPage() {
+  const router = useRouter();
   const [selectedId, setSelectedId] = useState<number>(mockReports[0].id);
   const [portfolioModal, setPortfolioModal] = useState<PortfolioModal>(null);
+  const [afterNav, setAfterNav] = useState(false);
   const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
   const { isFavorited, toggleFavorite } = useFavorites();
   const { inPortfolio, togglePortfolio } = usePortfolio();
@@ -97,6 +100,19 @@ export default function AIReportPage() {
     if (!portfolioModal) return;
     togglePortfolio(portfolioModal.stockCode);
     setPortfolioModal(null);
+    if (afterNav) {
+      setAfterNav(false);
+      router.push("/portfolio");
+    }
+  }
+
+  function handleSignalClick() {
+    if (inPortfolio(selected.stockCode)) {
+      router.push("/portfolio");
+    } else {
+      setAfterNav(true);
+      setPortfolioModal({ stockName: selected.stockName, stockCode: selected.stockCode, action: "add" });
+    }
   }
 
   return (
@@ -352,7 +368,7 @@ export default function AIReportPage() {
 
           {/* AI 시그널 버튼 */}
           <div className="flex justify-end">
-            <button className="flex items-center gap-2.5 bg-blue-50 hover:bg-blue-100 text-blue-600 font-bold text-sm px-5 py-3 rounded-xl transition-colors">
+            <button onClick={handleSignalClick} className="flex items-center gap-2.5 bg-blue-50 hover:bg-blue-100 text-blue-600 font-bold text-sm px-5 py-3 rounded-xl transition-colors">
               AI 시그널 확인하기
               <svg
                 className="w-4 h-4"
