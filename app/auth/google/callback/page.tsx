@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { handleGoogleCallback } from "@/lib/signup/auth";
 
-export default function GoogleCallbackPage() {
+function GoogleCallbackInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [error, setError] = useState("");
@@ -42,5 +42,19 @@ export default function GoogleCallbackPage() {
         Google 로그인 처리 중...
       </div>
     </main>
+  );
+}
+
+export default function GoogleCallbackPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="auth-shell flex min-h-screen items-center justify-center px-5">
+          <div className="text-sm font-bold text-white">로딩 중...</div>
+        </main>
+      }
+    >
+      <GoogleCallbackInner />
+    </Suspense>
   );
 }

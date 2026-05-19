@@ -223,10 +223,10 @@ export default function PortfolioPage() {
           {allStocks.map((stock) => {
             const active = selectedCode === stock.stockCode;
             return (
-              <button
+              <div
                 key={stock.stockCode}
                 onClick={() => setSelectedCode(stock.stockCode)}
-                className={`w-full flex items-center gap-3 px-5 py-4 text-left transition-colors ${
+                className={`relative w-full flex items-center gap-3 px-5 py-4 cursor-pointer transition-colors ${
                   active ? "bg-white" : "bg-gray-50 hover:bg-gray-100"
                 }`}
               >
@@ -261,7 +261,7 @@ export default function PortfolioPage() {
                     </svg>
                   </button>
                 </div>
-              </button>
+              </div>
             );
           })}
         </div>
