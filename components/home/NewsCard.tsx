@@ -1,5 +1,5 @@
 import { mockNews } from '@/lib/home/mock';
-
+import Link from 'next/link';
 export default function NewsCard() {
   const n = mockNews;
 
@@ -27,12 +27,18 @@ export default function NewsCard() {
       </div>
 
       <div className="mt-4 flex gap-2">
-        <button className="rounded-xl bg-blue-800 px-3 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 active:bg-blue-900">
+        <Link
+          href="/insights"
+          className="rounded-xl bg-blue-800 px-3 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 active:bg-blue-900"
+        >
           더 보기
-        </button>
-        <button className="rounded-xl border border-blue-800/20 bg-white px-3 py-2 text-sm font-semibold text-blue-800 shadow-sm transition hover:bg-sky-50 active:bg-sky-100">
-          관련 종목 보기
-        </button>
+        </Link>
+        <Link
+          href="/insights"
+          className="rounded-xl border border-blue-800/20 bg-white px-3 py-2 text-sm font-semibold text-blue-800 shadow-sm transition hover:bg-sky-50 active:bg-sky-100"
+        >
+          관련 종목 보기{' '}
+        </Link>
       </div>
     </article>
   );
